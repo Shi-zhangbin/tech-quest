@@ -1,0 +1,23 @@
+{
+  "skill_name": "tech-quest-console",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "给我做一个游戏化的学习界面，主题是大模型推理，要有技能树和动手实验，内容要有技术深度不要科普",
+      "expected_output": "产出 <theme>-quest 目录：含前置链+支线的技能树、六段式卡片 content.js、仪器控制台 HTML、3 个真实计算沙盒关、验证过的视频链接、localStorage 持久化，Playwright 验证零 console 错误",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "我想系统学 Kubernetes 但网上的教程太浅，能不能做成像打游戏解锁技能那样的东西，最好还能模拟排障",
+      "expected_output": "按 skill 生产线产出 K8s 模块：前置链从容器基础讲起、调度/排障沙盒关、crashLoop 等机制动画、视频资源联网验证",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "给已有的 tech-quest 项目加一个「数据库 internals」模块，和前面几个模块保持一样的形式",
+      "expected_output": "复用 assets/console-template.html 克隆适配，走同样的 9 步生产线（前置链→事实库→视频调研→content.js→HTML→动画→沙盒→持久化→验证）",
+      "files": []
+    }
+  ]
+}
