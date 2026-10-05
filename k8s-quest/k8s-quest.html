@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>K8S-QUEST · 集群调度控制台</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --chassis:#d9d5cc;
+  --panel:#edeae2;
+  --panel2:#e4e0d6;
+  --ink:#1c1b17;
+  --ink2:#57544b;
+  --hair:#1c1b17;
+  --accent:#326CE5;
+  --screen:#14130f;
+  --amber:#ffb000;
+  --green:#2f9e44;
+  --red:#d92020;
+  --dimled:#b8b3a6;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html,body{background:var(--chassis)}
+body{
+  font-family:"Space Grotesk","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  min-width:1440px;
+  background:
+    radial-gradient(circle at 18px 18px, rgba(28,27,23,.10) 1.2px, transparent 1.3px) 0 0/36px 36px,
+    var(--chassis);
+}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{width:1400px;margin:10px auto 30px}
+
+.plate{
+  background:var(--panel);
+  border:1px solid var(--hair);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 2px 6px rgba(28,27,23,.18);
+  position:relative;
+}
+.screw{position:absolute;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f5f2ea,#8f8b80 70%,#5c594f);
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.55)}
+.screw::after{content:"";position:absolute;left:1px;right:1px;top:50%;height:1px;background:rgba(28,27,23,.7);transform:rotate(38deg)}
+.screw.tl{top:6px;left:6px}.screw.tr{top:6px;right:6px}
+.screw.bl{bottom:6px;left:6px}.screw.br{bottom:6px;right:6px}
+
+.label-micro{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.label-micro b{color:var(--ink)}
+
+header.plate{height:52px;display:flex;align-items:center;gap:18px;padding:0 22px;margin-bottom:10px}
+.brand{font-weight:700;font-size:20px;letter-spacing:.06em}
+.brand em{font-style:normal;color:var(--accent)}
+.header-sep{width:1px;height:30px;background:var(--hair);opacity:.35}
+.header-item{font-size:12px;letter-spacing:.12em;color:var(--ink2)}
+.header-item b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:600}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.led{width:9px;height:9px;border-radius:50%;background:var(--dimled);box-shadow:inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-g{background:var(--green);box-shadow:0 0 6px rgba(47,158,68,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-a{background:var(--amber);box-shadow:0 0 6px rgba(255,176,0,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-r{background:var(--red);box-shadow:0 0 6px rgba(217,32,32,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.pulse{animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.ledpair{display:flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.14em;color:var(--ink2)}
+
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.panel-title{font-size:15px;font-weight:700;letter-spacing:.1em}
+.panel-title::before{content:"";display:inline-block;width:8px;height:8px;background:var(--accent);margin-right:8px;transform:translateY(-1px)}
+.progress-chip{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;
+  border:1px solid var(--hair);padding:2px 8px;background:var(--panel2)}
+
+.matrix-panel{padding:12px 18px 12px;margin-bottom:10px}
+.matrix-wrap{position:relative;width:1352px;height:600px;margin:0 auto;
+  background:
+    linear-gradient(rgba(28,27,23,.05) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(28,27,23,.05) 1px,transparent 1px) 0 0/22px 22px,
+    var(--panel2);
+  border:1px solid var(--hair)}
+#cables{position:absolute;inset:0;pointer-events:none}
+.zone-label{position:absolute;font-size:12px;font-weight:700;letter-spacing:.3em;color:var(--ink2);
+  border-bottom:1px solid rgba(28,27,23,.4);padding-bottom:2px}
+.module{position:absolute;width:124px;height:100px;background:var(--panel);
+  border:1px solid var(--hair);cursor:pointer;user-select:none;
+  box-shadow:0 2px 0 rgba(28,27,23,.25);transition:transform .08s}
+.module:hover{transform:translateY(-1px)}
+.module .mod-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid rgba(28,27,23,.35)}
+.module .mod-code{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink2)}
+.module .mod-branch{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--accent);font-weight:600}
+.module .mod-name{padding:5px 9px 0;font-size:13px;font-weight:700;line-height:1.22;letter-spacing:.02em}
+.module .mod-sub{padding:2px 9px 0;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink2);
+  letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.module .jacks{position:absolute;bottom:6px;left:9px;right:9px;display:flex;justify-content:space-between}
+.jack{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6d6a60,#26251f 75%);box-shadow:inset 0 0 0 1px rgba(28,27,23,.8)}
+.module .mod-led{margin-left:auto}
+.module.locked{opacity:.55;cursor:not-allowed;
+  background:repeating-linear-gradient(45deg,var(--panel) 0 6px,#e0dcd1 6px 12px)}
+.module.locked:hover{transform:none}
+.module.done{box-shadow:0 2px 0 rgba(28,27,23,.25), inset 0 -3px 0 var(--green)}
+.module.selected{outline:2px solid var(--accent);outline-offset:1px}
+.module .mod-tag{position:absolute;top:-9px;right:6px;background:var(--green);color:#f3efe4;
+  font-size:10px;letter-spacing:.12em;padding:1px 6px;font-family:"IBM Plex Mono",monospace;font-weight:600}
+
+.card-panel{padding:12px 18px 14px;margin-bottom:10px}
+.screen{background:var(--screen);border:1px solid var(--hair);color:var(--amber);
+  font-family:"IBM Plex Mono",monospace;padding:14px 16px;position:relative;overflow:auto}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,176,0,.045) 0 1px,transparent 1px 3px)}
+.screen .scr-title{color:#f5e9cf;font-size:15px;font-weight:600;letter-spacing:.05em;margin-bottom:4px}
+.screen .scr-sub{color:#8f7f57;font-size:13px;letter-spacing:.04em;margin-bottom:10px}
+.screen .scr-row{font-size:14px;line-height:1.65;letter-spacing:.02em}
+.screen .scr-row b{color:#ffe1a8;font-weight:600}
+.screen .scr-dim{color:#8f7f57}
+.screen .scr-formula{color:#ffd27a;font-size:14px;background:rgba(255,176,0,.07);
+  border-left:2px solid var(--amber);padding:6px 9px;margin:6px 0;line-height:1.65;white-space:pre-wrap}
+.card-empty{display:flex;height:100%;min-height:300px;align-items:center;justify-content:center;
+  color:#8f7f57;font-size:13px;letter-spacing:.1em}
+.card-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:6px 22px;position:relative;z-index:1}
+.sec{margin-bottom:10px}
+.sec-t{color:#f5e9cf;font-size:13px;font-weight:600;letter-spacing:.12em;margin-bottom:5px;
+  border-bottom:1px solid rgba(255,176,0,.28);padding-bottom:3px}
+.sec-t::before{content:attr(data-n);color:var(--accent);margin-right:8px}
+.card-scroll{max-height:640px;overflow:auto}
+.res-block{margin-top:4px}
+.res-kind{color:#8f7f57;font-size:12px;letter-spacing:.14em;margin:6px 0 3px}
+.res-link{display:block;color:var(--amber);text-decoration:none;font-size:14px;line-height:1.5}
+.res-link:hover{color:#ffe1a8;text-decoration:underline}
+.res-meta{color:#8f7f57;font-size:12px;line-height:1.5;margin:1px 0 5px 12px}
+.res-meta b{color:#c9b586;font-weight:500}
+.kw-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.kw-chip{font-size:12px;color:var(--amber);text-decoration:none;border:1px solid rgba(255,176,0,.4);
+  padding:2px 7px;line-height:1.5}
+.kw-chip:hover{background:rgba(255,176,0,.12);color:#ffe1a8}
+.kw-chip i{font-style:normal;color:#8f7f57;font-size:10.5px;margin-left:4px}
+
+.dgm{margin:4px 0 8px;border:1px solid rgba(255,176,0,.25);padding:8px 10px;background:rgba(255,176,0,.03)}
+.dgm-title{color:#f5e9cf;font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:7px}
+.dgm-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:4px}
+.dgm-node{border:1px solid rgba(255,176,0,.45);padding:4px 8px;font-size:12px;line-height:1.45;max-width:150px}
+.dgm-node b{display:block;color:#ffe1a8;font-weight:600}
+.dgm-node span{color:var(--amber)}
+.dgm-arrow{color:var(--accent);align-self:center;font-size:12px;font-weight:600}
+.dgm-bar-row{display:grid;grid-template-columns:130px 1fr 190px;gap:8px;align-items:center;margin-bottom:5px;font-size:12px}
+.dgm-bar-label{color:#ffe1a8;text-align:right}
+.dgm-bar-track{height:10px;background:rgba(255,176,0,.1);border:1px solid rgba(255,176,0,.25)}
+.dgm-bar-fill{height:100%;background:var(--amber)}
+.dgm-bar-val{color:var(--amber)}
+.dgm-cmp-row{display:grid;grid-template-columns:150px 1fr;gap:10px;font-size:13px;line-height:1.55;
+  padding:3px 0;border-bottom:1px dashed rgba(255,176,0,.18)}
+.dgm-cmp-row:last-child{border-bottom:none}
+.dgm-cmp-row b{color:#ffe1a8;font-weight:600}
+.dgm-tree-row{font-size:13px;line-height:1.7;color:var(--amber)}
+.dgm-tree-row b{color:#ffe1a8;font-weight:600}
+.dgm-tree-row .guide{color:var(--accent)}
+
+.dgm-node{opacity:.32;transition:opacity .3s,border-color .3s,box-shadow .3s}
+.dgm-node.lit{opacity:1;border-color:var(--accent);box-shadow:inset 2px 0 0 var(--accent)}
+.dgm-arrow{position:relative;min-width:18px;text-align:center}
+.dgm-sig{position:absolute;top:50%;left:2px;width:5px;height:5px;border-radius:50%;margin-top:-2px;
+  background:var(--accent);box-shadow:0 0 5px rgba(50,108,229,.9);animation:dgmSig 1.1s linear infinite}
+@keyframes dgmSig{0%{left:2px;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:calc(100% - 7px);opacity:0}}
+.dgm-cmp-row b,.dgm-cmp-row span{opacity:0}
+.dgm-cmp-row b{animation:dgmWipeL .4s ease-out forwards}
+.dgm-cmp-row span{animation:dgmWipeR .4s ease-out forwards}
+@keyframes dgmWipeL{from{clip-path:inset(0 100% 0 0);opacity:0}to{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes dgmWipeR{from{clip-path:inset(0 0 0 100%);opacity:0}to{clip-path:inset(0 0 0 0);opacity:1}}
+.dgm-tree-row{opacity:0;transform:translateY(6px);animation:dgmTree .35s ease-out forwards}
+@keyframes dgmTree{to{opacity:1;transform:none}}
+.dgm-loop{width:100%;height:auto;display:block}
+.dgm-canvas{display:block;width:100%;height:auto;border:1px solid rgba(50,108,229,.35);background:#10131b}
+.dgm-loop-path{stroke:rgba(50,108,229,.55);stroke-width:1.5;stroke-dasharray:5 4;animation:dgmDash 2.2s linear infinite}
+@keyframes dgmDash{to{stroke-dashoffset:-18}}
+.dgm-loop-sig{fill:var(--accent);filter:drop-shadow(0 0 4px rgba(50,108,229,.95))}
+.dgm-lnode{opacity:.35;transition:opacity .3s}
+.dgm-lnode rect{fill:var(--screen);stroke:rgba(255,176,0,.45);transition:stroke .3s}
+.dgm-lnode .lt{fill:#ffe1a8;font-size:12px;font-weight:600}
+.dgm-lnode .ld{fill:var(--amber);font-size:9.5px}
+.dgm-lnode.lit{opacity:1}
+.dgm-lnode.lit rect{stroke:var(--accent)}
+
+.quiz{margin-top:10px;border:1px solid var(--hair);background:var(--panel2);padding:10px 14px 12px}
+.quiz-q{font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.5}
+.quiz-q .qtag{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--panel);
+  background:var(--ink);padding:1px 7px;letter-spacing:.12em;margin-right:8px;vertical-align:2px}
+.quiz-opt{display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 9px;margin-bottom:5px;
+  border:1px solid rgba(28,27,23,.4);cursor:pointer;background:var(--panel)}
+.quiz-opt:hover{border-color:var(--ink)}
+.quiz-opt.sel{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.quiz-opt .key{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--ink2)}
+.quiz-foot{display:flex;align-items:center;gap:12px;margin-top:8px}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;
+  padding:7px 16px;background:var(--ink);color:#f3efe4;border:1px solid var(--hair);cursor:pointer;
+  box-shadow:0 2px 0 rgba(28,27,23,.4)}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.quiz-result{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.06em}
+.quiz-result.ok{color:var(--green)}
+.quiz-result.ng{color:var(--red)}
+.quiz-explain{display:none;margin-top:8px;font-size:13px;line-height:1.6;color:var(--ink2);
+  border-left:3px solid var(--green);padding:4px 10px;background:rgba(47,158,68,.06)}
+.quiz-explain.show{display:block}
+
+.sandbox{padding:12px 18px 12px}
+.ch-tabs{display:flex;gap:0;border:1px solid var(--hair)}
+.ch-tab{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.05em;
+  padding:7px 18px;background:var(--panel2);border:none;border-right:1px solid var(--hair);cursor:pointer;color:var(--ink2)}
+.ch-tab:last-child{border-right:none}
+.ch-tab:hover{color:var(--ink)}
+.ch-tab.on{background:var(--ink);color:#f3efe4}
+.ch-tab.on em{font-style:normal;color:var(--accent)}
+.ch-tab .ch-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dimled);margin-right:7px;
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.4)}
+.ch-tab.cleared .ch-dot{background:var(--green);box-shadow:0 0 5px rgba(47,158,68,.8)}
+.sb-panel{display:none;position:relative}
+.sb-panel.on{display:block}
+.sb-grid{display:flex;gap:18px;margin-top:12px}
+.sb-controls{flex:0 0 452px;border-right:1px solid rgba(28,27,23,.3);padding-right:18px}
+.ctl-group{margin-bottom:9px}
+.ctl-label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.12em;color:var(--ink2);
+  text-transform:uppercase;margin-bottom:6px}
+.ctl-label output{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent);font-size:13px;letter-spacing:0}
+.ctl-fixed{font-size:13px;line-height:1.7;color:var(--ink2);border:1px dashed rgba(28,27,23,.4);
+  padding:6px 10px;margin-bottom:10px;background:var(--panel2)}
+.ctl-fixed b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:600}
+.seg{display:flex;border:1px solid var(--hair)}
+.seg button{flex:1;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.02em;
+  padding:6px 2px;background:var(--panel2);border:none;border-right:1px solid var(--hair);cursor:pointer;color:var(--ink2)}
+.seg button:last-child{border-right:none}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--ink);color:#f3efe4}
+input[type=range]{-webkit-appearance:none;width:100%;height:26px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:
+  repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 10%),rgba(28,27,23,.3)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:24px;margin-top:-10px;
+  background:linear-gradient(180deg,#f7f4ec,#c9c5b9);border:1px solid var(--hair);
+  box-shadow:0 2px 3px rgba(28,27,23,.35);border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:rgba(28,27,23,.35)}
+input[type=range]::-moz-range-thumb{width:15px;height:23px;background:linear-gradient(180deg,#f7f4ec,#c9c5b9);
+  border:1px solid var(--hair);border-radius:2px}
+.txtin{width:100%;font-family:"IBM Plex Mono",monospace;font-size:13px;padding:7px 10px;
+  border:1px solid var(--hair);background:var(--panel);color:var(--ink)}
+.txtin:focus{outline:2px solid var(--accent)}
+.txtin.bad{border-color:var(--red);box-shadow:inset 3px 0 0 var(--red)}
+
+.podgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.podchip{display:flex;align-items:center;gap:7px;border:1px solid rgba(28,27,23,.4);
+  background:var(--panel);padding:6px 8px;cursor:pointer;user-select:none}
+.podchip:hover{border-color:var(--ink)}
+.podchip.on{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.podchip .pc-box{width:11px;height:11px;border:1px solid var(--hair);background:var(--panel2);flex:none}
+.podchip.on .pc-box{background:var(--accent)}
+.podchip .pc-name{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px}
+.podchip .pc-spec{color:var(--ink2);font-family:"IBM Plex Mono",monospace;font-size:11px}
+.podchip .pc-crit{margin-left:auto;color:var(--accent);font-size:10px;letter-spacing:.1em;font-weight:600}
+
+.sb-right{flex:1;display:flex;gap:18px;min-width:0}
+.sb-mid{flex:1.15;min-width:0;display:flex;flex-direction:column}
+.sb-readouts{flex:0 0 300px;display:flex;flex-direction:column;gap:8px}
+
+.membar-zone{margin-bottom:8px}
+.membar{position:relative;height:26px;border:1px solid var(--hair);background:#dcd8cd;display:flex;overflow:hidden}
+.membar .segU{background:var(--accent)}
+.membar .segU2{background:var(--ink)}
+.membar .segD{background:repeating-linear-gradient(45deg,var(--red) 0 5px,#8f1010 5px 10px)}
+.membar-cap{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(28,27,23,.6)}
+.mem-legend{display:flex;gap:14px;margin-top:5px;font-size:12px;letter-spacing:.06em;color:var(--ink2)}
+.mem-legend i{display:inline-block;width:9px;height:9px;margin-right:4px;transform:translateY(1px)}
+.mem-pct{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600}
+.mem-pct.over{color:var(--red)}
+
+.readout{border:1px solid var(--hair);background:var(--panel2);padding:5px 10px 6px}
+.readout .ro-label{font-size:12px;letter-spacing:.12em;color:var(--ink2);text-transform:uppercase}
+.readout .ro-val{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;line-height:1.2;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.readout .ro-val small{font-size:12px;font-weight:500;color:var(--ink2)}
+.readout.bad .ro-val{color:var(--red)}
+.readout.good .ro-val{color:var(--green)}
+
+.trace{flex:1;display:flex;flex-direction:column}
+.trace .screen{flex:1;font-size:13px;min-height:250px;max-height:360px}
+.trace .scr-row{line-height:1.62;white-space:pre-wrap;font-size:13px}
+.warn-line{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--red);
+  border:1px solid var(--red);background:rgba(217,32,32,.06);padding:5px 9px;letter-spacing:.03em;line-height:1.5}
+.sla-strip{display:flex;align-items:center;gap:12px;border:1px solid var(--hair);
+  background:var(--panel2);padding:9px 12px;flex-direction:column;align-items:stretch;gap:6px}
+.sla-strip .sla-txt{font-size:13px;font-weight:700;letter-spacing:.04em}
+.sla-strip .sla-sub{font-size:12px;color:var(--ink2);font-family:"IBM Plex Mono",monospace;line-height:1.6}
+.sla-lamp{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:13px;font-weight:600;letter-spacing:.12em}
+.sla-lamp .lampbox{width:14px;height:14px;border-radius:50%;background:var(--dimled);
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.55)}
+.sla-lamp.pass .lampbox{background:var(--green);box-shadow:0 0 10px rgba(47,158,68,.9),inset 0 0 0 1px rgba(28,27,23,.5)}
+.sla-lamp.pass{color:var(--green)}
+.sla-lamp.fail{color:var(--ink2)}
+.clear-banner{display:none;margin-top:10px;border:1px solid var(--ink);background:var(--ink);color:#f3efe4;
+  padding:10px 14px;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.08em}
+.clear-banner em{font-style:normal;color:var(--amber)}
+.clear-banner.show{display:block}
+.stamp{position:absolute;top:-8px;right:8px;display:none;border:2px solid var(--accent);color:var(--accent);
+  font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;letter-spacing:.3em;padding:3px 12px 3px 16px;
+  transform:rotate(-7deg);background:rgba(237,234,226,.85);z-index:2}
+.stamp.show{display:block}
+
+.scen-tabs{display:flex;gap:0;border:1px solid var(--hair);width:fit-content;margin-bottom:10px}
+.scen-tab{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.05em;
+  padding:6px 14px;background:var(--panel2);border:none;border-right:1px solid var(--hair);cursor:pointer;color:var(--ink2)}
+.scen-tab:last-child{border-right:none}
+.scen-tab:hover{color:var(--ink)}
+.scen-tab.on{background:var(--ink);color:#f3efe4}
+.scen-tab .ch-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dimled);margin-right:6px;
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.4)}
+.scen-tab.cleared .ch-dot{background:var(--green);box-shadow:0 0 5px rgba(47,158,68,.8)}
+.scen-sym{font-size:14px;line-height:1.7;border-left:3px solid var(--accent);
+  padding:8px 12px;background:var(--panel2);margin-bottom:12px;color:var(--ink)}
+.scen-sym b{font-family:"IBM Plex Mono",monospace;color:var(--red)}
+.step3-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.step3-label{font-size:12px;letter-spacing:.12em;color:var(--ink2);text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.step3-label b{color:var(--accent);font-family:"IBM Plex Mono",monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="plate">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="brand">K8S<em>-</em>QUEST</div>
+    <div class="header-sep"></div>
+    <div class="header-item">集群调度控制台 <b>REV.A</b></div>
+    <div class="header-item">机型 <b>KQ-3N</b></div>
+    <div class="header-item">集群 <b>3N × 4C8G</b></div>
+    <div class="header-item">沙盒通关 <b id="hClear">0 / 3</b></div>
+    <div class="header-item"><button id="btnReset" style="font-family:inherit;font-size:10px;letter-spacing:.1em;padding:2px 8px;background:none;border:1px solid var(--ink2);color:var(--ink2);cursor:pointer" title="清空本地进度">RST</button></div>
+    <div class="header-right">
+      <div class="ledpair"><span class="led on-g"></span>PWR</div>
+      <div class="ledpair"><span class="led on-a pulse"></span>BUS</div>
+      <div class="ledpair"><span class="led" id="ledErr"></span>ERR</div>
+      <div class="header-item mono" id="clock" style="font-weight:600;color:var(--ink)">00:00:00</div>
+    </div>
+  </header>
+
+  <section class="plate matrix-panel">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">技能矩阵 · 模块 ×22</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="progress-chip" id="progChip">已校准 0 / 22</span>
+        <span class="label-micro">跳线 = 依赖 · 绿灯 = 已校准 · 红 LED = 锁定</span>
+      </div>
+    </div>
+    <div class="matrix-wrap" id="matrix">
+      <svg id="cables" width="1352" height="600"></svg>
+    </div>
+  </section>
+
+  <section class="plate card-panel">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">技术卡片 · 示波读数</div>
+      <span class="label-micro" id="cardCh">CH -- · 未选模块</span>
+    </div>
+    <div id="cardBody">
+      <div class="screen"><span class="card-empty">-- 在上方矩阵中选择一个模块 --</span></div>
+    </div>
+  </section>
+
+  <section class="plate sandbox">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">沙盒关卡 · 仪器面板</div>
+      <div class="ch-tabs" id="chTabs">
+        <button class="ch-tab on" data-ch="1"><span class="ch-dot"></span>CH-01 <em>「服务上线」</em></button>
+        <button class="ch-tab" data-ch="2"><span class="ch-dot"></span>CH-02 <em>「容量与调度」</em></button>
+        <button class="ch-tab" data-ch="3"><span class="ch-dot"></span>CH-03 <em>「故障排查」</em></button>
+      </div>
+    </div>
+
+    <div class="sb-panel on" id="sb1">
+      <div class="stamp" id="stamp1">通关</div>
+      <div class="sb-grid">
+        <div class="sb-controls">
+          <div class="ctl-fixed">任务:Deployment 上线 · 集群 <b>3</b> 节点 × 4C8G · allocatable 按 <b>90%</b> = 每节点 <b>3.6C / 7.2Gi</b><br>
+          目标:全部 Pod Running · 服务外部可达 · 镜像可拉取</div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>REPLICAS 副本数</span><output id="oRep1"></output></div>
+            <input type="range" id="rRep1" min="1" max="12" step="1" value="6">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>REQUESTS · CPU</span><output id="oCpu1"></output></div>
+            <input type="range" id="rCpu1" min="0.25" max="2" step="0.25" value="0.5">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>REQUESTS · MEM</span><output id="oMem1"></output></div>
+            <input type="range" id="rMem1" min="256" max="2048" step="256" value="512">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>LIMITS(≥ requests)</span><output id="oLim1"></output></div>
+            <div class="seg" id="segLim1">
+              <button data-v="1" class="on">= REQ ×1</button>
+              <button data-v="1.5">×1.5</button>
+              <button data-v="2">×2</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>SERVICE 类型</span><output id="oSvc1"></output></div>
+            <div class="seg" id="segSvc1">
+              <button data-v="ClusterIP" class="on">ClusterIP</button>
+              <button data-v="NodePort">NodePort</button>
+              <button data-v="LoadBalancer">LoadBalancer</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>IMAGE 镜像</span><output id="oImg1"></output></div>
+            <input type="text" class="txtin" id="tImg1" value="nginx:1.27" spellcheck="false">
+          </div>
+        </div>
+        <div class="sb-right">
+          <div class="sb-mid">
+            <div class="membar-zone">
+              <div class="ctl-label"><span>集群 CPU 占用(已分配 / 溢出需求)</span><span class="mem-pct" id="cpuPct1"></span></div>
+              <div class="membar">
+                <div class="segU" id="cpuU1"></div><div class="segD" id="cpuD1" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="ctl-label" style="margin-top:8px"><span>集群内存占用(已分配 / 溢出需求)</span><span class="mem-pct" id="memPct1"></span></div>
+              <div class="membar">
+                <div class="segU" id="memU1"></div><div class="segD" id="memD1" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="mem-legend">
+                <span><i style="background:var(--accent)"></i>已分配(requests)</span>
+                <span><i style="background:repeating-linear-gradient(45deg,#d92020 0 3px,#8f1010 3px 6px)"></i>溢出需求 → Pending</span>
+              </div>
+            </div>
+            <div class="trace"><div class="screen" id="trace1"></div></div>
+          </div>
+          <div class="sb-readouts">
+            <div class="readout" id="roRun1"><div class="ro-label">Running Pods</div>
+              <div class="ro-val"><span id="vRun1">--</span> <small>/ <span id="vRep1">--</span></small></div></div>
+            <div class="readout" id="roPend1"><div class="ro-label">Pending Pods</div>
+              <div class="ro-val"><span id="vPend1">--</span></div></div>
+            <div class="readout" id="roFit1"><div class="ro-label">单节点容量 / 集群容量</div>
+              <div class="ro-val" style="font-size:17px"><span id="vFit1">--</span></div></div>
+            <div class="readout" id="roSvc1"><div class="ro-label">外部可达性</div>
+              <div class="ro-val" style="font-size:17px"><span id="vSvc1">--</span></div></div>
+            <div class="warn-line" id="warn1" style="display:none"></div>
+            <div class="sla-strip">
+              <div class="sla-txt">验收目标</div>
+              <div class="sla-sub">全部 Running · Service ≠ ClusterIP · 镜像可拉取</div>
+              <div class="sla-lamp fail" id="slaLamp1"><span class="lampbox"></span><span id="slaTxt1">NOT READY</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner1">LEVEL CLEAR · <em>服务已上线</em> · requests 容量规划与 Service 暴露通关</div>
+    </div>
+
+    <div class="sb-panel" id="sb2">
+      <div class="stamp" id="stamp2">通关</div>
+      <div class="sb-grid">
+        <div class="sb-controls">
+          <div class="ctl-fixed">固定:<b>3</b> 节点 × 3.6C / 7.2Gi · 贪心 first-fit 按 <b>requests</b> 摆放<br>
+          勾选启用负载 · 关键负载:<b>db · web×2 · api×2</b> · 目标:关键负载全 Running 且集群 CPU 利用率 ≥ <b>50%</b></div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>待调度 POD(点击启用/停用)</span><output id="oPods2"></output></div>
+            <div class="podgrid" id="podGrid2"></div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>NODE-3 污点(dedicated=db,db 已带容忍)</span><output id="oTaint2"></output></div>
+            <div class="seg" id="segTaint2">
+              <button data-v="off" class="on">OFF · 自由调度</button>
+              <button data-v="on">ON · db 独占 node-3</button>
+            </div>
+          </div>
+        </div>
+        <div class="sb-right">
+          <div class="sb-mid">
+            <div class="membar-zone">
+              <div class="ctl-label"><span>集群 CPU 占用</span><span class="mem-pct" id="cpuPct2"></span></div>
+              <div class="membar">
+                <div class="segU2" id="cpuU2"></div><div class="segD" id="cpuD2" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="ctl-label" style="margin-top:8px"><span>集群内存占用</span><span class="mem-pct" id="memPct2"></span></div>
+              <div class="membar">
+                <div class="segU2" id="memU2"></div><div class="segD" id="memD2" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="mem-legend">
+                <span><i style="background:var(--ink)"></i>已分配(requests)</span>
+                <span><i style="background:repeating-linear-gradient(45deg,#d92020 0 3px,#8f1010 3px 6px)"></i>Pending 需求</span>
+              </div>
+            </div>
+            <div class="trace"><div class="screen" id="trace2"></div></div>
+          </div>
+          <div class="sb-readouts">
+            <div class="readout" id="roRun2"><div class="ro-label">Running / 已启用</div>
+              <div class="ro-val"><span id="vRun2">--</span></div></div>
+            <div class="readout" id="roPend2"><div class="ro-label">Pending</div>
+              <div class="ro-val" style="font-size:15px"><span id="vPend2">--</span></div></div>
+            <div class="readout" id="roCpu2"><div class="ro-label">CPU 利用率(requests)</div>
+              <div class="ro-val"><span id="vCpu2">--</span> <small>%</small></div></div>
+            <div class="readout" id="roMem2"><div class="ro-label">MEM 利用率(requests)</div>
+              <div class="ro-val"><span id="vMem2">--</span> <small>%</small></div></div>
+            <div class="warn-line" id="warn2" style="display:none"></div>
+            <div class="sla-strip">
+              <div class="sla-txt">验收目标</div>
+              <div class="sla-sub">db · web×2 · api×2 全 Running · CPU 利用率 ≥ 50%</div>
+              <div class="sla-lamp fail" id="slaLamp2"><span class="lampbox"></span><span id="slaTxt2">NOT READY</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner2">LEVEL CLEAR · <em>调度达标</em> · bin-packing 与污点容忍协同通关</div>
+    </div>
+
+    <div class="sb-panel" id="sb3">
+      <div class="stamp" id="stamp3">通关</div>
+      <div style="margin-top:12px">
+        <div class="scen-tabs" id="scenTabs">
+          <button class="scen-tab on" data-s="0"><span class="ch-dot"></span>场景① CrashLoopBackOff</button>
+          <button class="scen-tab" data-s="1"><span class="ch-dot"></span>场景② Pending</button>
+          <button class="scen-tab" data-s="2"><span class="ch-dot"></span>场景③ 滚动更新 502</button>
+        </div>
+        <div class="scen-sym" id="scenSym"></div>
+        <div class="step3-grid" id="step3Grid"></div>
+        <div class="quiz-foot">
+          <button class="btn" id="btnChk3" disabled>校验此场景</button>
+          <span class="quiz-result" id="res3"></span>
+          <span class="label-micro">三场景全部排查正确 → 通关</span>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner3">LEVEL CLEAR · <em>故障排查达标</em> · OOM / 资源不足 / 就绪探针三类根因通关</div>
+    </div>
+  </section>
+</div>
+
+<script src="k8s-quest-content.js"></script>
+<script>
+const C = window.LLM_QUEST_CONTENT;
+const NODES = {};
+const ORDER = [];
+let _pi=0, _ki=0;
+C.nodes.forEach(n=>{
+  n.code = n.branch==='prereq' ? 'PK'+String(++_pi).padStart(2,'0') : 'K'+String(++_ki).padStart(2,'0');
+  NODES[n.id]=n; ORDER.push(n.id);
+});
+const BR = {prereq:'PREREQ',arch:'ARCH',sched:'SCHED',data:'DATA',ops:'OPS'};
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (v,d=1)=>v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+
+const GUT=96, GX=160, GY=140, MW=124, MH=100, TOP=34;
+const pos = n => ({x:GUT+(n.grid.col-1)*GX, y:TOP+n.grid.row*GY});
+const state = {};
+let selected = null;
+
+const SAVE_KEY = 'k8sq-v1';
+function saveProgress(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify({done:Object.keys(state).filter(k=>state[k]==='done'), cleared:cleared})); }catch(e){}
+}
+function loadProgress(){
+  let d = null;
+  try{ d = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
+  if(!d) return;
+  (d.done||[]).forEach(id=>{ if(NODES[id]) state[id]='done'; });
+  if(d.cleared) [1,2,3].forEach(ch=>{ if(d.cleared[ch]) markClear(ch,true); });
+}
+function resetProgress(){
+  if(!confirm('清空所有校准进度与沙盒通关记录？')) return;
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  location.reload();
+}
+
+function nodeStatus(id){
+  if(state[id]) return state[id];
+  const n = NODES[id];
+  return n.deps.every(p=>state[p]==='done') ? 'open' : 'locked';
+}
+function doneCount(){ return ORDER.filter(id=>state[id]==='done').length; }
+
+const matrix = document.getElementById('matrix');
+const cables = document.getElementById('cables');
+
+function renderMatrix(){
+  matrix.querySelectorAll('.module,.zone-label').forEach(e=>e.remove());
+  [['PREREQ',1,6,5],
+   ['ARCH',1,6,TOP+GY-28],
+   ['SCHED',1,3,TOP+2*GY-28],
+   ['DATA',5,7,TOP+2*GY-28],
+   ['OPS',1,4,TOP+3*GY-28]].forEach(z=>{
+    const el = document.createElement('div');
+    el.className='zone-label';
+    el.style.left=(GUT+(z[1]-1)*GX)+'px';
+    el.style.top=z[3]+'px';
+    el.style.width=((z[2]-z[1]+1)*GX-28)+'px';
+    el.textContent=z[0];
+    matrix.appendChild(el);
+  });
+  ORDER.forEach(id=>{
+    const n = NODES[id], st = nodeStatus(id), p = pos(n);
+    const el = document.createElement('div');
+    el.className='module'+(st==='locked'?' locked':'')+(st==='done'?' done':'')+(selected===id?' selected':'');
+    el.style.left=p.x+'px'; el.style.top=p.y+'px';
+    const ledCls = st==='done'?'led on-g':st==='open'?'led on-a pulse':'led on-r';
+    el.innerHTML =
+      '<div class="mod-head"><span class="mod-code">'+n.code+'</span><span class="mod-branch">'+BR[n.branch]+'</span><span class="'+ledCls+' mod-led" style="width:9px;height:9px;border-radius:50%"></span></div>'+
+      '<div class="mod-name">'+esc(n.name)+'</div>'+
+      '<div class="mod-sub">'+esc(n.en)+'</div>'+
+      '<div class="jacks"><span class="jack"></span><span class="jack"></span></div>'+
+      (st==='done'?'<div class="mod-tag">CAL OK</div>':'');
+    el.addEventListener('click',()=>selectNode(id));
+    matrix.appendChild(el);
+  });
+  renderCables();
+  document.getElementById('progChip').textContent = '已校准 '+doneCount()+' / '+ORDER.length;
+}
+
+function renderCables(){
+  cables.innerHTML='';
+  ORDER.forEach(id=>{
+    const n = NODES[id];
+    n.deps.forEach(pid=>{
+      const a = NODES[pid], pa = pos(a), pb = pos(n);
+      const dx = pb.x-pa.x, dy = pb.y-pa.y;
+      let x1,y1,x2,y2;
+      if(Math.abs(dx) >= Math.abs(dy)){
+        x1 = dx>=0 ? pa.x+MW : pa.x;  y1 = pa.y+MH-12;
+        x2 = dx>=0 ? pb.x : pb.x+MW;  y2 = pb.y+MH-12;
+      }else{
+        x1 = pa.x+MW/2; y1 = dy>=0 ? pa.y+MH : pa.y;
+        x2 = pb.x+MW/2; y2 = dy>=0 ? pb.y : pb.y+MH;
+      }
+      const st = nodeStatus(id), pst = nodeStatus(pid);
+      let stroke='#a49f92', dash=' stroke-dasharray="4 4"', w=1.5;
+      if(pst==='done' && st!=='locked'){ stroke='#326CE5'; dash=''; w=2.5; }
+      if(st==='done'){ stroke='#2f9e44'; dash=''; w=2.5; }
+      const mx=(x1+x2)/2;
+      cables.innerHTML += '<path d="M '+x1+' '+y1+' C '+mx+' '+y1+', '+mx+' '+y2+', '+x2+' '+y2+'" fill="none" stroke="'+stroke+'" stroke-width="'+w+'"'+dash+'/>';
+    });
+  });
+}
+
+/* ============ Canvas 2D 定制动画引擎 ============ */
+const AC={blue:'#326CE5',blueL:'#8fb0f5',amber:'#ffb000',green:'#3fb950',red:'#e5484d',txt:'#cdd8ee',dim:'#5f6f8f',panel:'#161b26'};
+function aGrid(ctx,W,H){
+  ctx.fillStyle='#10131b';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(50,108,229,.10)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=14;x<W;x+=28){ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,H);}
+  for(let y=14;y<H;y+=28){ctx.moveTo(0,y+.5);ctx.lineTo(W,y+.5);}
+  ctx.stroke();
+}
+function aTxt(ctx,s,x,y,o){
+  o=o||{};
+  ctx.font=(o.b?'600 ':'')+(o.s||11)+'px "IBM Plex Mono",monospace';
+  ctx.fillStyle=o.c||AC.txt;ctx.textAlign=o.a||'left';ctx.textBaseline='middle';
+  ctx.fillText(s,x,y);
+}
+function aBox(ctx,x,y,w,h,sc,fc){
+  if(fc){ctx.fillStyle=fc;ctx.fillRect(x,y,w,h);}
+  ctx.strokeStyle=sc;ctx.lineWidth=1.2;ctx.strokeRect(x,y,w,h);
+}
+const eoc=t=>t<0?0:t>1?1:1-Math.pow(1-t,3);
+const aBlink=(T,f)=>Math.floor(T*f)%2===0;
+const aEcg=q=>q<.15?-4*Math.sin(q/.15*Math.PI):q<.3?-4+34*Math.sin((q-.15)/.15*Math.PI):q<.45?8*Math.sin((q-.3)/.15*Math.PI):0;
+
+const ANIM={
+reconcileLoop(ctx,W,H,t){
+  const T=t%7; aGrid(ctx,W,H);
+  aTxt(ctx,'CONTROL LOOP · reconcile 不息',W/2,18,{a:'center',b:true,c:AC.blueL,s:12});
+  aBox(ctx,36,64,150,116,AC.blue,AC.panel);
+  aTxt(ctx,'期望状态',111,84,{a:'center',b:true});
+  aTxt(ctx,'replicas: 3',111,104,{a:'center',c:AC.blueL});
+  for(let i=0;i<3;i++) aBox(ctx,57+i*37,124,26,26,AC.blue,'rgba(50,108,229,.4)');
+  ctx.strokeStyle=AC.dim;ctx.beginPath();ctx.moveTo(192,84);ctx.lineTo(306,84);ctx.moveTo(306,160);ctx.lineTo(192,160);ctx.stroke();
+  aTxt(ctx,'spec →',196,74,{c:AC.dim,s:9});
+  aTxt(ctx,'← status',196,172,{c:AC.dim,s:9});
+  aTxt(ctx,'实际状态',412,48,{a:'center',b:true});
+  const slots=[330,392,454];
+  let vis=[true,true,false],fly=null,stTxt='',stC=AC.dim,flash=false;
+  if(T<1.4){
+    stTxt='observe · 控制器扫视实际状态…';
+    const sx=315+(T/1.4)*195;
+    ctx.strokeStyle=AC.amber;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx,64);ctx.lineTo(sx,158);ctx.stroke();ctx.lineWidth=1.2;
+    ctx.fillStyle=AC.amber;ctx.beginPath();ctx.arc(sx,60,4,0,7);ctx.fill();
+  }else if(T<2.4){ stTxt='diff · 检测到偏差'; stC=AC.red; flash=true;
+  }else if(T<3.6){ const u=eoc((T-2.4)/1.2); fly={x:200+(slots[2]-200)*u}; stTxt='act · 补建 1 个 Pod'; stC=AC.amber;
+  }else if(T<4.6){ vis=[true,true,true]; stTxt='3 = 3 · 平衡 ✓'; stC=AC.green;
+  }else if(T<5.8){ vis=[true,T>=5.2?false:!aBlink(T,10),true]; stTxt=T<5.2?'人为删除 Pod !':'2 ≠ 3 · 再次失衡'; stC=AC.red;
+  }else{ const u=eoc((T-5.8)/1.2); vis=[true,u>=1,true]; fly=u>=1?null:{x:200+(slots[1]-200)*u}; stTxt=u>=1?'3 = 3 · 平衡 ✓':'reconcile · 自动补建'; stC=u>=1?AC.green:AC.amber; }
+  for(let i=0;i<3;i++){
+    const x=slots[i],y=104;
+    aBox(ctx,x,y,44,44,vis[i]?AC.blue:AC.dim,vis[i]?'rgba(50,108,229,.4)':'rgba(95,111,143,.08)');
+    if(vis[i]) aTxt(ctx,'Pod',x+22,y+22,{a:'center',s:10,b:true});
+  }
+  if(fly){ aBox(ctx,fly.x,104,44,44,AC.amber,'rgba(255,176,0,.35)'); aTxt(ctx,'Pod',fly.x+22,126,{a:'center',s:10,b:true,c:AC.amber}); }
+  if(flash&&aBlink(T,6)) aTxt(ctx,'2 ≠ 3',412,180,{a:'center',b:true,c:AC.red,s:16});
+  aTxt(ctx,'● '+stTxt,36,226,{c:stC,b:true,s:12});
+  aTxt(ctx,'observe → diff → act → observe …',36,252,{c:AC.dim,s:10});
+},
+scheduleBinpack(ctx,W,H,t){
+  const T=t%8; aGrid(ctx,W,H);
+  aTxt(ctx,'SCHEDULER · filter → score → bind',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  const pods=[{cpu:1,mem:'1Gi'},{cpu:2,mem:'2Gi'},{cpu:1,mem:'1Gi'},{cpu:3.5,mem:'3Gi'}];
+  const tgt=[0,1,2,-1];
+  const nx=[250,350,450],nTop=46,nH=160,nW=62,perC=nH/4;
+  const used=[0,0,0],placed=[[],[],[]];
+  for(let i=0;i<4;i++){ if(T>=i*2+2&&tgt[i]>=0){ placed[tgt[i]].push(pods[i]); used[tgt[i]]+=pods[i].cpu; } }
+  for(let n=0;n<3;n++){
+    aBox(ctx,nx[n],nTop,nW,nH,AC.dim,AC.panel);
+    aTxt(ctx,'node-'+(n+1),nx[n]+nW/2,nTop-12,{a:'center',s:10,b:true});
+    aTxt(ctx,'4C8G',nx[n]+nW/2,nTop+nH+12,{a:'center',s:9,c:AC.dim});
+    ctx.strokeStyle='rgba(95,111,143,.4)';
+    for(let c=1;c<4;c++){ctx.beginPath();ctx.moveTo(nx[n],nTop+c*perC);ctx.lineTo(nx[n]+nW,nTop+c*perC);ctx.stroke();}
+    let acc=0;
+    placed[n].forEach(p=>{ const h=p.cpu*perC-4; aBox(ctx,nx[n]+4,nTop+nH-acc-p.cpu*perC+2,nW-8,h,AC.blue,'rgba(50,108,229,.45)'); acc+=p.cpu*perC; });
+  }
+  aTxt(ctx,'queue',77,40,{a:'center',s:10,c:AC.dim,b:true});
+  let stTxt='',stC=AC.dim;
+  for(let i=0;i<4;i++){
+    const si=i*2,tl=T-si,p=pods[i];
+    if(tl<0){
+      aBox(ctx,50,56+i*40,54,18,AC.dim,'rgba(95,111,143,.15)');
+      aTxt(ctx,p.cpu+'C/'+p.mem,112,65+i*40,{s:9,c:AC.dim});
+      continue;
+    }
+    if(tl>=2){
+      if(tgt[i]<0){
+        aBox(ctx,40,254,84,20,AC.dim,'rgba(95,111,143,.2)');
+        aTxt(ctx,'Pending',82,264,{a:'center',s:10,b:true,c:AC.dim});
+        aTxt(ctx,'0/3 nodes: Insufficient cpu',134,264,{s:10,c:AC.red,b:true});
+      }
+      continue;
+    }
+    const rem=[0,1,2].map(n=>4-used[n]);
+    const feas=rem.map(r=>p.cpu<=r);
+    const pw=54,ph=Math.max(16,p.cpu*perC*0.55);
+    let px,py,pc=AC.blue,pfc='rgba(50,108,229,.45)';
+    if(tl<0.5){ const u=eoc(tl/0.5); px=50+(170-50)*u; py=(56+i*40)+(110-(56+i*40))*u; stTxt='filter · 各节点查 requests 余量'; }
+    else if(tl<1){ px=170; py=110; stTxt='filter · 装不下的节点打叉';
+      for(let n=0;n<3;n++) if(!feas[n]) aTxt(ctx,'✕',nx[n]+nW/2,nTop+nH/2,{a:'center',c:AC.red,s:22,b:true});
+    }
+    else if(tl<1.5){ px=170; py=110; stTxt='score · 可行节点打分';
+      for(let n=0;n<3;n++) if(feas[n]){
+        const sc=rem[n]/4;
+        ctx.fillStyle=n===tgt[i]?AC.blue:AC.dim;
+        ctx.fillRect(nx[n]+5,nTop-24,sc*(nW-10),8);
+        aTxt(ctx,Math.round(sc*100)+'',nx[n]+nW/2,nTop-32,{a:'center',s:9,c:n===tgt[i]?AC.blueL:AC.dim});
+      }
+    }
+    else{ const u=eoc((tl-1.5)/0.5);
+      if(tgt[i]>=0){
+        const n=tgt[i];
+        px=170+(nx[n]+nW/2-pw/2-170)*u;
+        py=110+(nTop+nH-(used[n]+p.cpu)*perC+(p.cpu*perC-ph)/2+2-110)*u;
+        stTxt='bind · 落入最优 node-'+(n+1); stC=AC.green;
+      }else{
+        px=170+(40-170)*u; py=110+(254-110)*u; pc=AC.dim; pfc='rgba(95,111,143,.25)';
+        stTxt='不可调度 · 转 Pending'; stC=AC.red;
+        aTxt(ctx,'0/3 nodes: Insufficient cpu',134,264,{s:10,c:AC.red,b:true});
+      }
+    }
+    aBox(ctx,px,py,pw,ph,pc,pfc);
+    aTxt(ctx,p.cpu+'C/'+p.mem,px+pw/2,py+ph/2,{a:'center',s:9,b:true,c:pc===AC.dim?AC.dim:'#fff'});
+  }
+  aTxt(ctx,'● '+stTxt,36,240,{c:stC,b:true,s:11});
+},
+trafficFanout(ctx,W,H,t){
+  const T=t%7; aGrid(ctx,W,H);
+  aTxt(ctx,'SERVICE FAN-OUT · kube-proxy 规则',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  const failed=T>=2.5&&T<5.0,recov=T>=5.0&&T<5.8;
+  aBox(ctx,30,110,64,44,AC.blue,AC.panel);
+  aTxt(ctx,'Client',62,132,{a:'center',b:true,s:11});
+  aBox(ctx,170,100,110,64,AC.blue,'rgba(50,108,229,.18)');
+  aTxt(ctx,'Service VIP',225,118,{a:'center',b:true});
+  aTxt(ctx,'10.96.0.15',225,136,{a:'center',c:AC.blueL,s:10});
+  aTxt(ctx,'kube-proxy · iptables',225,156,{a:'center',c:AC.dim,s:9});
+  const ips=['10.244.1.7','10.244.2.3','10.244.3.9'],py=[46,116,186];
+  ctx.strokeStyle='rgba(50,108,229,.35)';ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(94,132);ctx.lineTo(170,132);ctx.stroke();
+  for(let i=0;i<3;i++){
+    if(i===1&&failed) continue;
+    ctx.beginPath();ctx.moveTo(280,122);ctx.lineTo(400,py[i]+22);ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  if(failed){
+    ctx.strokeStyle='rgba(229,72,77,.5)';ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(280,122);ctx.lineTo(400,py[1]+22);ctx.stroke();ctx.setLineDash([]);
+    aTxt(ctx,'✕',338,(122+py[1]+22)/2,{a:'center',c:AC.red,s:15,b:true});
+  }
+  for(let i=0;i<3;i++){
+    let c=AC.blue,fc='rgba(50,108,229,.35)',tc='#fff',sub='ready',sc=AC.dim;
+    if(i===1){
+      if(failed){c=AC.red;fc='rgba(229,72,77,.25)';tc=AC.red;sub='DOWN';sc=AC.red;}
+      else if(recov){c=aBlink(T,8)?AC.green:AC.blue;fc='rgba(63,185,80,.25)';sub='new · ready';sc=AC.green;}
+    }
+    aBox(ctx,400,py[i],110,44,c,fc);
+    aTxt(ctx,'Pod · '+ips[i],455,py[i]+15,{a:'center',s:10,b:true,c:tc});
+    aTxt(ctx,sub,455,py[i]+32,{a:'center',s:9,c:sc,b:i===1&&failed});
+  }
+  aTxt(ctx,'endpoints:',300,232,{s:10,c:AC.dim,b:true});
+  for(let i=0;i<3;i++){
+    const ey=248+i*13,dead=i===1&&failed;
+    aTxt(ctx,(dead?'✕ ':'· ')+ips[i],300,ey,{s:10,c:dead?AC.red:AC.txt});
+    if(dead){ctx.strokeStyle=AC.red;ctx.beginPath();ctx.moveTo(300,ey);ctx.lineTo(392,ey);ctx.stroke();}
+  }
+  const act=[true,!failed,true];
+  for(let i=0;i<3;i++){
+    if(!act[i]) continue;
+    for(let k=0;k<2;k++){
+      const u=(T*0.55+i*0.18+k*0.5)%1;
+      let x,y;
+      if(u<0.4){ const v=u/0.4; x=94+(170-94)*v; y=132+(122-132)*v; }
+      else{ const v=(u-0.4)/0.6; x=280+(400-280)*v; y=122+(py[i]+22-122)*v; }
+      ctx.fillStyle='rgba(50,108,229,.35)';ctx.beginPath();ctx.arc(x,y,6,0,7);ctx.fill();
+      ctx.fillStyle=AC.blueL;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();
+    }
+  }
+  let st='三路后端 · 负载均衡',c=AC.green;
+  if(failed){st='Pod 故障 → endpoints 摘除 · 流量自动切两路';c=AC.red;}
+  else if(recov){st='新 Pod 就绪 → 重新加入 endpoints · 恢复三路';c=AC.amber;}
+  aTxt(ctx,'● '+st,30,266,{c:c,b:true,s:11});
+},
+rolloutSwap(ctx,W,H,t){
+  const T=t%8; aGrid(ctx,W,H);
+  aTxt(ctx,'ROLLOUT · maxSurge:1 · maxUnavailable:0',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  const sx=[150,240,330],sy=92,pw=64,ph=44,gx=440;
+  const pod=(x,y,v,c,fc,a)=>{ctx.globalAlpha=a==null?1:a;aBox(ctx,x,y,pw,ph,c,fc);aTxt(ctx,v,x+pw/2,y+ph/2,{a:'center',b:true,c:'#fff'});ctx.globalAlpha=1;};
+  const beat=(x0,y0,w,T2,c)=>{ctx.strokeStyle=c;ctx.beginPath();ctx.moveTo(x0,y0);
+    for(let x=0;x<=w;x+=3){const q=(x/w*0.5+T2)%1;ctx.lineTo(x0+x,y0-aEcg(q)*0.6);}ctx.stroke();};
+  ctx.setLineDash([4,4]);aBox(ctx,gx,sy,pw,ph,AC.dim);ctx.setLineDash([]);
+  aTxt(ctx,'surge 位',gx+pw/2,sy+ph+14,{a:'center',s:9,c:AC.dim});
+  aTxt(ctx,'Deployment · replicas: 3',150,64,{s:10,c:AC.dim,b:true});
+  let st='',stC=AC.dim,anno='';
+  const ver=['v1','v1','v1'];
+  if(T>=3.9) ver[0]='v2';
+  for(let i=0;i<3;i++){
+    if(i===0&&T>=3&&T<3.5){ pod(sx[0],sy,'v1',AC.blue,'rgba(50,108,229,.4)',1-eoc((T-3)/0.5)); continue; }
+    if(i===0&&T>=3.5&&T<3.9) continue;
+    pod(sx[i],sy,ver[i],ver[i]==='v2'?AC.green:AC.blue,ver[i]==='v2'?'rgba(63,185,80,.35)':'rgba(50,108,229,.4)');
+  }
+  if(T<1){ st='v1 ×3 · 稳定运行'; }
+  else if(T<2){ st='maxSurge · 先 +1 个 v2'; stC=AC.amber; pod(gx,sy,'v2',AC.green,'rgba(63,185,80,.35)',eoc(T-1)); }
+  else if(T<3){ pod(gx,sy,'v2',AC.green,'rgba(63,185,80,.35)');
+    if(T<2.6){ st='readiness 心跳检测…'; stC=AC.amber; beat(gx+6,sy-18,pw-12,T*3,AC.green); }
+    else{ st='readiness ✓ 通过'; stC=AC.green; aTxt(ctx,'✓',gx+pw/2,sy-20,{a:'center',c:AC.green,s:16,b:true}); } }
+  else if(T<4){ st='摘 1 个 v1 · 滚动推进'; stC=AC.amber;
+    if(T<3.4) pod(gx,sy,'v2',AC.green,'rgba(63,185,80,.35)');
+    else if(T<3.9){ const u=eoc((T-3.4)/0.5); pod(gx+(sx[0]-gx)*u,sy,'v2',AC.green,'rgba(63,185,80,.35)'); } }
+  else if(T<5){ st='下一批 · surge 再 +1 v2'; stC=AC.amber; pod(gx,sy,'v2',AC.green,'rgba(63,185,80,.35)',eoc(T-4)); }
+  else if(T<7){ const bl=aBlink(T,6);
+    pod(gx,sy,'v2',bl?AC.amber:AC.red,bl?'rgba(255,176,0,.3)':'rgba(229,72,77,.25)');
+    st='readiness 失败 · 新 Pod 卡住 · 发布暂停'; stC=AC.red;
+    aTxt(ctx,'✕',gx+pw/2,sy-20,{a:'center',c:AC.red,s:15,b:true});
+    anno='maxUnavailable=0 生效 → v1 全部保留 · 可用副本不缩水（止损）'; }
+  else{ st='修复后重试 · 回环演示'; if(T<7.5) pod(gx,sy,'v2',AC.dim,'rgba(95,111,143,.2)',1-eoc((T-7)/0.5)); }
+  ctx.strokeStyle=AC.dim;ctx.beginPath();ctx.moveTo(140,170);ctx.lineTo(520,170);ctx.stroke();
+  for(let i=0;i<=4;i++){ctx.beginPath();ctx.moveTo(140+i*95,166);ctx.lineTo(140+i*95,174);ctx.stroke();}
+  aTxt(ctx,'time →',470,186,{s:9,c:AC.dim});
+  aTxt(ctx,'● '+st,150,216,{c:stC,b:true,s:12});
+  if(anno) aTxt(ctx,anno,150,242,{c:AC.amber,b:true,s:11});
+  aTxt(ctx,'先起后摘 · 每一步都等 readiness',150,266,{c:AC.dim,s:10});
+},
+probeBeat(ctx,W,H,t){
+  const T=t%7; aGrid(ctx,W,H);
+  aTxt(ctx,'PROBE BEAT · liveness vs readiness',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  const down=T>=2.5&&T<4.5;
+  aTxt(ctx,'liveness',40,62,{s:11,b:true,c:AC.blueL});
+  aTxt(ctx,'失败 → 重启容器',40,78,{s:9,c:AC.dim});
+  ctx.strokeStyle='rgba(50,108,229,.25)';ctx.beginPath();ctx.moveTo(130,90);ctx.lineTo(540,90);ctx.stroke();
+  ctx.strokeStyle=down?AC.red:AC.green;ctx.lineWidth=1.6;ctx.beginPath();
+  for(let x=130;x<=540;x+=3){
+    let y=90;
+    if(!down) y=90-aEcg(((x-130)*0.006+t*1.4)%1);
+    else y=90+Math.sin(x*1.3+t*30)*0.8;
+    if(x===130)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();ctx.lineWidth=1.2;
+  if(down) aTxt(ctx,'container crashed · exit 1',335,116,{a:'center',c:AC.red,b:true,s:10});
+  const rc=T>=4.5?1:0;
+  aBox(ctx,436,34,104,22,rc&&(T<5?aBlink(T,8):true)?AC.amber:AC.dim,AC.panel);
+  aTxt(ctx,'restartCount: '+rc,488,45,{a:'center',s:10,c:rc?AC.amber:AC.dim,b:!!rc});
+  aTxt(ctx,'readiness',40,182,{s:11,b:true,c:AC.blueL});
+  aTxt(ctx,'失败 → 摘出 endpoints',40,198,{s:9,c:AC.dim});
+  aBox(ctx,130,182,86,36,AC.blue,'rgba(50,108,229,.18)');
+  aTxt(ctx,'Service',173,200,{a:'center',s:10,b:true});
+  aBox(ctx,430,182,100,36,down?AC.amber:AC.blue,down?'rgba(255,176,0,.15)':'rgba(50,108,229,.35)');
+  aTxt(ctx,'Pod',480,195,{a:'center',s:10,b:true});
+  aTxt(ctx,down?'过载 · 不重启':'ready',480,208,{a:'center',s:9,c:down?AC.amber:AC.dim});
+  if(down){
+    ctx.strokeStyle='rgba(229,72,77,.5)';ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(216,200);ctx.lineTo(430,200);ctx.stroke();ctx.setLineDash([]);
+    aTxt(ctx,'✕',323,200,{a:'center',c:AC.red,s:15,b:true});
+  }else{
+    ctx.strokeStyle='rgba(50,108,229,.4)';ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(216,200);ctx.lineTo(430,200);ctx.stroke();ctx.setLineDash([]);
+    for(let k=0;k<3;k++){
+      const u=(T*0.5+k*0.33)%1;
+      ctx.fillStyle=AC.blueL;ctx.beginPath();ctx.arc(216+(430-216)*u,200,3,0,7);ctx.fill();
+    }
+  }
+  aTxt(ctx,down?'endpoints: 已摘除（不重启）':'endpoints: ✓ 接入',250,238,{s:10,c:down?AC.red:AC.green,b:true});
+  aTxt(ctx,'liveness 杀进程重启 · readiness 只摘流量 —— 两探针别共用同一接口',W/2,266,{a:'center',c:AC.dim,s:10});
+},
+hpaScale(ctx,W,H,t){
+  const T=t%7.5; aGrid(ctx,W,H);
+  aTxt(ctx,'HPA · 指标驱动扩缩容',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  const x0=40,y0=40,x1=380,y1=230;
+  const load=tt=>{ tt=Math.max(tt,0);
+    if(tt<2) return 45+65*eoc(tt/2);
+    if(tt<4.5) return 110;
+    if(tt<5.5) return 110-55*eoc((tt-4.5)/1);
+    return 55; };
+  const yv=v=>y1-(v/125)*(y1-y0);
+  ctx.strokeStyle=AC.dim;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y1);ctx.lineTo(x1,y1);ctx.stroke();
+  ctx.strokeStyle=AC.amber;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(x0,yv(60));ctx.lineTo(x1,yv(60));ctx.stroke();ctx.setLineDash([]);
+  aTxt(ctx,'target 60%',x1-4,yv(60)-10,{a:'right',s:9,c:AC.amber});
+  ctx.strokeStyle=AC.blue;ctx.lineWidth=1.8;ctx.beginPath();
+  for(let x=x0;x<=x1;x+=4){
+    const v=load(T-(x1-x)*0.006)+Math.sin(x*0.09+T*5)*4;
+    if(x===x0)ctx.moveTo(x,yv(v));else ctx.lineTo(x,yv(v));
+  }
+  ctx.stroke();ctx.lineWidth=1.2;
+  aTxt(ctx,Math.round(load(T))+'%',x1+8,yv(load(T)),{s:11,b:true,c:load(T)>60?AC.red:AC.green});
+  const reps=T<3?2:T<6.2?4:T<6.6?3:2;
+  aTxt(ctx,'replicas: '+reps,480,36,{a:'center',s:10,b:true,c:AC.blueL});
+  for(let i=0;i<4;i++){
+    const bx=418+i*32,on=i<reps;
+    let c=on?AC.blue:AC.dim,fc=on?'rgba(50,108,229,.45)':'rgba(95,111,143,.1)';
+    if(on&&((i===2&&T<3.6)||(i===3&&T<4.4))) c=aBlink(T,8)?AC.green:AC.blue;
+    aBox(ctx,bx,48,26,26,c,fc);
+  }
+  if(T>=2&&T<4.5){
+    const pop=aBlink(T,5)&&T<2.6;
+    aBox(ctx,396,88,150,58,pop?AC.amber:AC.blue,AC.panel);
+    aTxt(ctx,'HPA 控制器',471,104,{a:'center',s:10,b:true,c:AC.blueL});
+    aTxt(ctx,'⌈2 × 110/60⌉ = 4',471,124,{a:'center',s:12,b:true,c:'#fff'});
+    aTxt(ctx,'⌈rep × cur / target⌉',471,138,{a:'center',s:8,c:AC.dim});
+  }
+  let st,stC=AC.dim;
+  if(T<2){st='CPU 利用率爬升 · 越过 60% 目标线';stC=AC.amber;}
+  else if(T<3){st='HPA 计算期望副本';stC=AC.amber;}
+  else if(T<4.5){st='扩容 · 副本 2 → 4 逐个亮起';stC=AC.green;}
+  else if(T<5.5){st='负载摊薄 · 利用率回落线下';stC=AC.green;}
+  else if(T<6.2){st='稳态 · 4 副本低载运行';}
+  else{st='冷却期后缩容 → 2';}
+  aTxt(ctx,'● '+st,36,256,{c:stC,b:true,s:11});
+},
+crashLoop(ctx,W,H,t){
+  const T=t%8; aGrid(ctx,W,H);
+  aTxt(ctx,'CRASH LOOP · 状态机 + 排查',W/2,16,{a:'center',b:true,c:AC.blueL,s:12});
+  let st,stC,sub='',subC=AC.dim;
+  if(T<1.2){st='Running';stC=AC.green;sub='uptime 41s';}
+  else if(T<2.0){st=aBlink(T,8)?'exit 137':'─ ─ ─ ─';stC=AC.red;sub='容器崩溃 · OOMKilled';subC=AC.red;}
+  else if(T<4.6){st='CrashLoopBackOff';stC=AC.amber;sub='kubelet 退避等待';}
+  else if(T<5.4){st='restarting…';stC=AC.blueL;sub='restartCount: 4';}
+  else{st='Running';stC=AC.green;sub='稳定运行 · limits 1Gi';}
+  aBox(ctx,40,56,190,74,stC,AC.panel);
+  if(T>=1.2&&T<2.0&&aBlink(T,8)){ctx.strokeStyle=AC.red;ctx.lineWidth=3;ctx.strokeRect(38,54,194,78);ctx.lineWidth=1.2;}
+  aTxt(ctx,'Pod web-6d9f',135,74,{a:'center',s:10,c:AC.dim});
+  aTxt(ctx,st,135,100,{a:'center',b:true,s:14,c:stC});
+  aTxt(ctx,sub,135,120,{a:'center',s:9,c:subC});
+  if(T>=2&&T<5.4){
+    aTxt(ctx,'back-off',40,152,{s:9,c:AC.dim});
+    aBox(ctx,40,160,190,14,AC.dim);
+    ctx.fillStyle=AC.amber;ctx.fillRect(41,161,188*eoc((T-2)/2.6),12);
+    const lbls=['10s','→ 20s','→ 40s'];
+    for(let i=0;i<3;i++) if(T>2.4+i*0.8) aTxt(ctx,lbls[i],42+i*64,188,{s:9,c:AC.amber});
+    if(T>4.2) aTxt(ctx,'指数退避 ×2',40,204,{s:9,c:AC.dim});
+  }
+  aTxt(ctx,'排查清单',290,52,{s:11,b:true,c:AC.blueL});
+  const items=[
+    [1.6,'kubectl describe pod web'],
+    [2.6,'kubectl logs web --previous'],
+    [3.4,'exit 137 = OOMKilled · 超内存被杀'],
+    [5.0,'修复 · limits 512Mi → 1Gi'],
+    [6.2,'验证 · 稳定 Running ✓']
+  ];
+  items.forEach(it=>{
+    const lit=T>=it[0],y=84+items.indexOf(it)*36;
+    aTxt(ctx,lit?'▸':'·',290,y,{s:12,c:lit?AC.blue:AC.dim,b:true});
+    aTxt(ctx,it[1],308,y,{s:11,c:lit?AC.txt:'rgba(95,111,143,.45)'});
+  });
+  aTxt(ctx,'Running → exit 137 → CrashLoopBackOff → restart → Running',W/2,240,{a:'center',c:AC.dim,s:10});
+  aTxt(ctx,'● '+(T<1.2?'服务正常':T<2.0?'崩溃! 查看退出码':T<4.6?'退避重试中':T<5.4?'kubelet 重启容器':'已修复 · 恢复稳定'),40,264,{c:stC,b:true,s:11});
+}
+};
+
+function startAnim(cv){
+  const fn=ANIM[cv.dataset.anim];
+  if(!fn) return;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const W=560,H=280;
+  cv.width=W*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  const h={id:0}; dgmRafs.push(h);
+  const t0=performance.now();
+  const tick=now=>{ fn(ctx,W,H,(now-t0)/1000); h.id=requestAnimationFrame(tick); };
+  h.id=requestAnimationFrame(tick);
+}
+
+function dgmHtml(d){
+  let inner='';
+  if(d.anim && ANIM[d.anim]){
+    inner='<canvas class="dgm-canvas" data-anim="'+esc(d.anim)+'"></canvas>';
+  }else if(d.type==='flow'){
+    inner='<div class="dgm-flow">'+d.items.map((it,i)=>
+      (i>0?'<div class="dgm-arrow">▶<span class="dgm-sig"></span></div>':'')+
+      '<div class="dgm-node"><b>'+esc(it[0])+'</b><span>'+esc(it[1])+'</span></div>'
+    ).join('')+'</div>';
+  }else if(d.type==='bars'){
+    const nums = d.items.map(it=>{
+      const m = String(it[1]).match(/[\d.]+/g);
+      return m ? Math.max.apply(null,m.map(Number)) : 0;
+    });
+    const mx = Math.max.apply(null,nums.concat([1]));
+    inner=d.items.map((it,i)=>{
+      const pct = nums[i]>0 ? Math.max(6, nums[i]/mx*100) : 6;
+      const vs = String(it[1]);
+      const m2 = vs.match(/[\d.]+/);
+      const valHtml = m2 ? esc(vs.slice(0,m2.index))+'<span class="dgm-bar-cnt" data-v="'+m2[0]+'">0</span>'+esc(vs.slice(m2.index+m2[0].length)) : esc(vs);
+      return '<div class="dgm-bar-row"><span class="dgm-bar-label">'+esc(it[0])+'</span>'+
+        '<div class="dgm-bar-track"><div class="dgm-bar-fill" style="width:0" data-w="'+pct+'"></div></div>'+
+        '<span class="dgm-bar-val">'+valHtml+'</span></div>';
+    }).join('');
+  }else if(d.type==='compare'){
+    inner=d.items.map((it,i)=>'<div class="dgm-cmp-row"><b style="animation-delay:'+(i*160)+'ms">'+esc(it[0])+'</b><span style="animation-delay:'+(i*160+90)+'ms">'+esc(it[1])+'</span></div>').join('');
+  }else if(d.type==='tree'){
+    inner=d.items.map((it,i)=>{
+      const guide = i===0?'':'<span class="guide">'+(i===d.items.length-1?'└─ ':'├─ ')+'</span>';
+      const pad = i===0?0:12;
+      return '<div class="dgm-tree-row" style="padding-left:'+pad+'px;animation-delay:'+(i*120)+'ms">'+guide+'<b>'+esc(it[0])+'</b> · '+esc(it[1])+'</div>';
+    }).join('');
+  }else if(d.type==='loop'){
+    inner='<svg class="dgm-loop" viewBox="0 0 560 250">'+
+      '<path class="dgm-loop-path" fill="none" d="M 280 40 H 410 Q 480 40 480 125 Q 480 210 410 210 H 150 Q 80 210 80 125 Q 80 40 150 40 Z"/>'+
+      '<circle class="dgm-loop-sig" r="4.5" cx="280" cy="40"/>'+
+      d.items.map((it,i)=>'<g class="dgm-lnode" data-i="'+i+'">'+
+        '<rect x="-70" y="-23" width="140" height="46"/>'+
+        '<text class="lt" y="-4" text-anchor="middle">'+esc(it[0])+'</text>'+
+        '<text class="ld" y="13" text-anchor="middle">'+esc(it[1])+'</text></g>').join('')+
+      '</svg>';
+  }
+  return '<div class="dgm"><div class="dgm-title">◇ '+esc(d.title)+'</div>'+inner+'</div>';
+}
+
+function resHtml(r){
+  let h='';
+  if(r.youtube && r.youtube.length){
+    h+='<div class="res-kind">YOUTUBE</div>';
+    r.youtube.forEach(v=>{
+      h+='<a class="res-link" href="'+esc(v.url)+'" target="_blank" rel="noopener">▸ '+esc(v.title)+'</a>'+
+         '<div class="res-meta"><b>'+esc(v.channel)+'</b> · '+esc(v.why)+'</div>';
+    });
+  }
+  if(r.bilibili && r.bilibili.length){
+    h+='<div class="res-kind">BILIBILI</div>';
+    r.bilibili.forEach(v=>{
+      h+='<a class="res-link" href="'+esc(v.url)+'" target="_blank" rel="noopener">▸ '+esc(v.title)+'</a>'+
+         '<div class="res-meta"><b>UP '+esc(v.up)+'</b> · '+esc(v.why)+'</div>';
+    });
+  }
+  if(r.keywords && r.keywords.length){
+    h+='<div class="res-kind">抖音 / 小红书 · 搜索直达</div><div class="kw-row">';
+    r.keywords.forEach(kw=>{
+      const e = encodeURIComponent(kw);
+      h+='<a class="kw-chip" href="https://www.douyin.com/search/'+e+'" target="_blank" rel="noopener">抖音 · '+esc(kw)+'<i>搜索直达</i></a>';
+      h+='<a class="kw-chip" href="https://www.xiaohongshu.com/search_result?keyword='+e+'" target="_blank" rel="noopener">小红书 · '+esc(kw)+'<i>搜索直达</i></a>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+const cardBody = document.getElementById('cardBody');
+const cardCh = document.getElementById('cardCh');
+
+let dgmInts=[], dgmRafs=[];
+function clearDgm(){
+  dgmInts.forEach(clearInterval); dgmInts=[];
+  dgmRafs.forEach(h=>cancelAnimationFrame(h.id)); dgmRafs=[];
+}
+
+function animateDiagram(){
+  const root = cardBody.querySelector('.dgm');
+  if(!root) return;
+  const cv = root.querySelector('.dgm-canvas');
+  if(cv){ startAnim(cv); return; }
+  const steppers = root.querySelectorAll('.dgm-flow .dgm-node, .dgm-lnode');
+  if(steppers.length){
+    let i=0;
+    dgmInts.push(setInterval(()=>{
+      if(i>=steppers.length){ steppers.forEach(n=>n.classList.remove('lit')); i=0; }
+      else{ steppers[i].classList.add('lit'); i++; }
+    },500));
+  }
+  const fills = root.querySelectorAll('.dgm-bar-fill');
+  if(fills.length){
+    const cnts = root.querySelectorAll('.dgm-bar-cnt');
+    const t0 = performance.now();
+    const ease = t=>1-Math.pow(1-t,3);
+    const h={id:0}; dgmRafs.push(h);
+    const tick = now=>{
+      let done = true;
+      fills.forEach((f,k)=>{
+        const t = Math.min(1, Math.max(0,(now-t0-k*90)/800));
+        if(t<1) done=false;
+        f.style.width = (+f.dataset.w)*ease(t)+'%';
+      });
+      cnts.forEach((c,k)=>{
+        const t = Math.min(1, Math.max(0,(now-t0-k*90)/800));
+        const v = parseFloat(c.dataset.v);
+        c.textContent = (v%1===0 ? Math.round(v*ease(t)) : (v*ease(t)).toFixed(1));
+      });
+      if(!done) h.id=requestAnimationFrame(tick);
+    };
+    h.id=requestAnimationFrame(tick);
+  }
+  const path = root.querySelector('.dgm-loop-path');
+  if(path){
+    const L = path.getTotalLength();
+    const sig = root.querySelector('.dgm-loop-sig');
+    const nodes = root.querySelectorAll('.dgm-lnode');
+    nodes.forEach((g,k)=>{
+      const pt = path.getPointAtLength(L*k/nodes.length);
+      g.setAttribute('transform','translate('+pt.x+','+pt.y+')');
+    });
+    let s0 = null;
+    const h={id:0}; dgmRafs.push(h);
+    const orbit = ts=>{
+      if(s0===null) s0=ts;
+      const pt = path.getPointAtLength(L*(((ts-s0)/3200)%1));
+      sig.setAttribute('cx',pt.x); sig.setAttribute('cy',pt.y);
+      h.id=requestAnimationFrame(orbit);
+    };
+    h.id=requestAnimationFrame(orbit);
+  }
+}
+
+function selectNode(id){
+  clearDgm();
+  const st = nodeStatus(id);
+  const n = NODES[id];
+  if(st==='locked'){
+    selected=null;
+    cardCh.textContent='CH '+n.code+' · 信号锁定';
+    cardBody.innerHTML='<div class="screen" style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">'+
+      '<span style="color:#ff5c5c;font-size:13px;letter-spacing:.15em;font-weight:600">-- SIGNAL LOCKED --</span>'+
+      '<span class="card-empty" style="min-height:0">请先完成上游模块的校准测验</span></div>';
+    renderMatrix();
+    return;
+  }
+  selected=id;
+  cardCh.textContent='CH '+n.code+' · '+n.en;
+  renderCard(id);
+  renderMatrix();
+}
+
+function renderCard(id){
+  clearDgm();
+  const n = NODES[id], s = n.sections, done = state[id]==='done';
+  const paras = s.principle.split('\n').map(p=>'<div class="scr-row" style="margin-bottom:5px">'+esc(p)+'</div>').join('');
+  const formula = s.formula.map(esc).join('\n');
+  const example = s.example.map(l=>'<div class="scr-row">'+esc(l)+'</div>').join('');
+  const trades = s.tradeoffs.map(t=>'<div class="scr-row"><span class="scr-dim">▪</span> '+esc(t)+'</div>').join('');
+  const pits = s.pitfalls.map(t=>'<div class="scr-row"><span style="color:#ff8a5c">✕</span> '+esc(t)+'</div>').join('');
+  cardBody.innerHTML =
+    '<div class="screen card-scroll">'+
+      '<div class="scr-title">'+n.code+' · '+esc(n.name)+' <span style="color:var(--accent)">/</span> <span style="font-size:12px;color:#8f7f57">'+esc(n.en)+' · '+BR[n.branch]+'</span></div>'+
+      '<div class="scr-sub">'+esc(n.summary)+'</div>'+
+      '<div class="card-grid">'+
+        '<div>'+
+          '<div class="sec"><div class="sec-t" data-n="01">原理</div>'+paras+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="02">公式推导</div><div class="scr-formula">'+formula+'</div></div>'+
+          '<div class="sec"><div class="sec-t" data-n="03">数字算例</div>'+example+'</div>'+
+        '</div>'+
+        '<div>'+
+          dgmHtml(n.diagram)+
+          '<div class="sec"><div class="sec-t" data-n="04">工程权衡</div>'+trades+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="05">常见误区</div>'+pits+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="06">学习资源</div><div class="res-block">'+resHtml(n.resources)+'</div></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="quiz">'+
+      '<div class="quiz-q"><span class="qtag">CAL</span>'+esc(n.quiz.q)+'</div>'+
+      '<div id="quizOpts">'+n.quiz.options.map((o,i)=>'<div class="quiz-opt" data-i="'+i+'"><span class="key">'+'ABCD'[i]+'</span><span>'+esc(o)+'</span></div>').join('')+'</div>'+
+      '<div class="quiz-foot">'+
+        '<button class="btn" id="btnCheck" disabled>'+(done?'已通过':'校验')+'</button>'+
+        '<span class="quiz-result '+(done?'ok':'')+'" id="quizRes">'+(done?'CAL OK · 下游已解锁':'')+'</span>'+
+      '</div>'+
+      '<div class="quiz-explain'+(done?' show':'')+'" id="quizExp">'+esc(n.quiz.explain)+'</div>'+
+    '</div>';
+  let sel=-1;
+  animateDiagram();
+  cardBody.querySelectorAll('.quiz-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(state[id]==='done') return;
+      cardBody.querySelectorAll('.quiz-opt').forEach(e=>e.classList.remove('sel'));
+      el.classList.add('sel');
+      sel=+el.dataset.i;
+      document.getElementById('btnCheck').disabled=false;
+    });
+  });
+  document.getElementById('btnCheck').addEventListener('click',()=>{
+    if(state[id]==='done' || sel<0) return;
+    const res = document.getElementById('quizRes');
+    if(sel === n.quiz.answer){
+      state[id]='done';
+      saveProgress();
+      res.textContent='CAL OK · 下游已解锁';
+      res.className='quiz-result ok';
+      document.getElementById('btnCheck').textContent='已通过';
+      document.getElementById('btnCheck').disabled=true;
+      document.getElementById('quizExp').className='quiz-explain show';
+      renderMatrix();
+    }else{
+      res.textContent='CAL FAIL · 再读一遍卡片';
+      res.className='quiz-result ng';
+      const err=document.getElementById('ledErr');
+      err.className='led on-r';
+      setTimeout(()=>err.className='led',900);
+    }
+  });
+}
+
+function bindSeg(id, cb){
+  const seg = document.getElementById(id);
+  seg.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      cb(b.dataset.v);
+    });
+  });
+}
+
+function drawBar(uId, dId, pctId, cap, used, demand, unit, dCap){
+  const scale = Math.max(cap, demand);
+  document.getElementById(uId).style.width = (used/scale*100)+'%';
+  const d = document.getElementById(dId);
+  const over = Math.max(0, demand-cap);
+  if(over>0){ d.style.display='block'; d.style.width=(over/scale*100)+'%'; }
+  else d.style.display='none';
+  const mp = document.getElementById(pctId);
+  mp.textContent = fmt(used,2)+' / '+fmt(cap,1)+' '+unit+' · '+Math.round(used/cap*100)+'%'+(over>0?' · 溢出 '+fmt(over,2):'');
+  mp.className = 'mem-pct'+(over>0?' over':'');
+}
+
+const cleared = {1:false,2:false,3:false};
+function markClear(ch, pass){
+  if(pass && !cleared[ch]){
+    cleared[ch]=true;
+    saveProgress();
+    document.getElementById('stamp'+ch).className='stamp show';
+    document.getElementById('banner'+ch).className='clear-banner show';
+    document.querySelector('.ch-tab[data-ch="'+ch+'"]').classList.add('cleared');
+    document.getElementById('hClear').textContent=((cleared[1]?1:0)+(cleared[2]?1:0)+(cleared[3]?1:0))+' / 3';
+  }
+}
+
+/* ============ CH-01 服务上线 ============ */
+const NC = {cpu:3.6, mem:7.2};
+const CL = {cpu:NC.cpu*3, mem:NC.mem*3};
+const sb1 = {rep:6, cpu:0.5, mem:512, lim:1, svc:'ClusterIP', img:'nginx:1.27'};
+const IMG_OK = /^(nginx|redis|busybox|httpd|alpine|mysql|postgres)(:[a-z0-9][a-z0-9._-]{0,40})?$/i;
+
+document.getElementById('rRep1').addEventListener('input',e=>{sb1.rep=+e.target.value; calc1();});
+document.getElementById('rCpu1').addEventListener('input',e=>{sb1.cpu=+e.target.value; calc1();});
+document.getElementById('rMem1').addEventListener('input',e=>{sb1.mem=+e.target.value; calc1();});
+bindSeg('segLim1', v=>{sb1.lim=+v; calc1();});
+bindSeg('segSvc1', v=>{sb1.svc=v; calc1();});
+document.getElementById('tImg1').addEventListener('input',e=>{sb1.img=e.target.value; calc1();});
+
+function calc1(){
+  const memGi = sb1.mem/1024;
+  const img = sb1.img.trim();
+  const imgOK = IMG_OK.test(img);
+  const fitCpu = Math.floor(NC.cpu/sb1.cpu);
+  const fitMem = Math.floor(NC.mem/memGi);
+  const perNode = Math.min(fitCpu, fitMem);
+  const capTotal = perNode*3;
+  const running = imgOK ? Math.min(sb1.rep, capTotal) : 0;
+  const pending = sb1.rep - running;
+  const usedCpu = running*sb1.cpu, usedMem = running*memGi;
+  const demCpu = sb1.rep*sb1.cpu, demMem = sb1.rep*memGi;
+  const limCpu = sb1.cpu*sb1.lim, limMem = sb1.mem*sb1.lim;
+
+  document.getElementById('oRep1').textContent = sb1.rep;
+  document.getElementById('oCpu1').textContent = sb1.cpu.toFixed(2)+' 核';
+  document.getElementById('oMem1').textContent = sb1.mem+'Mi';
+  document.getElementById('oLim1').textContent = limCpu.toFixed(2)+'C / '+(limMem>=1024?fmt(limMem/1024,2)+'Gi':limMem+'Mi');
+  document.getElementById('oSvc1').textContent = sb1.svc;
+  document.getElementById('oImg1').textContent = imgOK?'可拉取':'非法';
+  document.getElementById('tImg1').className = 'txtin'+(imgOK?'':' bad');
+
+  drawBar('cpuU1','cpuD1','cpuPct1', CL.cpu, usedCpu, demCpu, 'C');
+  drawBar('memU1','memD1','memPct1', CL.mem, usedMem, demMem, 'Gi');
+
+  document.getElementById('vRun1').textContent = running;
+  document.getElementById('vRep1').textContent = sb1.rep;
+  document.getElementById('vPend1').textContent = pending;
+  document.getElementById('vFit1').innerHTML = perNode+' <small>/ 节点</small> · '+capTotal+' <small>/ 集群</small>';
+  document.getElementById('vSvc1').textContent = sb1.svc==='ClusterIP'?'仅集群内':'外部可达';
+  document.getElementById('roRun1').className='readout '+(running===sb1.rep?'good':'bad');
+  document.getElementById('roPend1').className='readout '+(pending>0?'bad':'good');
+  document.getElementById('roFit1').className='readout '+(capTotal<sb1.rep?'bad':'');
+  document.getElementById('roSvc1').className='readout '+(sb1.svc==='ClusterIP'?'bad':'good');
+
+  const warns=[];
+  if(!imgOK) warns.push('ImagePullBackOff:镜像「'+img+'」无法拉取,kubelet 重试退避中,全部 Pod 卡住');
+  if(pending>0) warns.push('容量不足:'+pending+' 个 Pod Pending,Events: 0/3 nodes available: Insufficient cpu/memory');
+  if(sb1.svc==='ClusterIP') warns.push('ClusterIP 仅集群内可达:外部流量进不来,目标要求外部可达,换 NodePort/LoadBalancer');
+  const w=document.getElementById('warn1');
+  w.style.display=warns.length?'block':'none';
+  w.textContent=warns.join(' / ');
+
+  document.getElementById('trace1').innerHTML =
+    '<div class="scr-title">算式追踪 · CH-01 CALC TRACE</div>'+
+    '<div class="scr-row">节点 allocatable = 4C × 0.9 = <b>3.6C</b> · 8Gi × 0.9 = <b>7.2Gi</b></div>'+
+    '<div class="scr-row">每节点可放 = min(⌊3.6 ÷ '+sb1.cpu.toFixed(2)+'⌋, ⌊7.2 ÷ '+fmt(memGi,2)+'⌋) = min('+fitCpu+', '+fitMem+') = <b>'+perNode+' Pod</b></div>'+
+    '<div class="scr-row">集群容量 = 3 × '+perNode+' = <b>'+capTotal+' Pod</b> vs replicas = <b>'+sb1.rep+'</b></div>'+
+    '<div class="scr-row">Running = '+(imgOK?'min('+sb1.rep+', '+capTotal+')':'0(镜像拉取失败)')+' = <b>'+running+'</b> · Pending = <b>'+pending+'</b> '+(pending>0?'<b style="color:#ff5c5c">✗</b>':'<b style="color:#7be495">✓</b>')+'</div>'+
+    '<div class="scr-row">requests 合计 = '+sb1.rep+' × ('+sb1.cpu.toFixed(2)+'C/'+sb1.mem+'Mi) = '+fmt(demCpu,2)+'C / '+fmt(demMem,2)+'Gi · 已分配 '+fmt(usedCpu,2)+'C / '+fmt(usedMem,2)+'Gi</div>'+
+    '<div class="scr-row" style="margin-top:4px">limits = requests × '+sb1.lim+' = '+limCpu.toFixed(2)+'C / '+(limMem>=1024?fmt(limMem/1024,2)+'Gi':limMem+'Mi')+' <span class="scr-dim">(limits 只管超卖与 QoS,不参与调度摆放)</span></div>'+
+    '<div class="scr-row">image = 「'+esc(img)+'」 → '+(imgOK?'<b style="color:#7be495">可拉取 ✓</b>':'<b style="color:#ff5c5c">ImagePullBackOff ✗</b>')+'</div>'+
+    '<div class="scr-row">Service = '+sb1.svc+' → '+(sb1.svc==='ClusterIP'?'<b style="color:#ff5c5c">仅集群内可达 ✗</b>':'<b style="color:#7be495">外部可达 ✓</b>')+'</div>';
+
+  const pass = imgOK && pending===0 && sb1.svc!=='ClusterIP';
+  const lamp=document.getElementById('slaLamp1');
+  lamp.className='sla-lamp '+(pass?'pass':'fail');
+  document.getElementById('slaTxt1').textContent = pass?'验收 PASS':(!imgOK?'镜像拉取失败':(pending>0?'存在 Pending':'外部不可达'));
+  markClear(1,pass);
+}
+
+/* ============ CH-02 容量与调度 ============ */
+const PODS2 = [
+  {id:'web1',  name:'web-1',  cpu:0.5, mem:0.5, crit:true},
+  {id:'web2',  name:'web-2',  cpu:0.5, mem:0.5, crit:true},
+  {id:'api1',  name:'api-1',  cpu:1,   mem:1,   crit:true},
+  {id:'api2',  name:'api-2',  cpu:1,   mem:1,   crit:true},
+  {id:'db',    name:'db',     cpu:2,   mem:2,   crit:true},
+  {id:'cache', name:'cache',  cpu:0.5, mem:1,   crit:false},
+  {id:'batch', name:'batch',  cpu:2,   mem:4,   crit:false},
+  {id:'report',name:'report', cpu:1,   mem:2,   crit:false},
+];
+const sb2 = {on:{}, taint:'off'};
+PODS2.forEach(p=>sb2.on[p.id]=p.crit);
+
+const podGrid = document.getElementById('podGrid2');
+PODS2.forEach(p=>{
+  const el = document.createElement('div');
+  el.className='podchip'+(sb2.on[p.id]?' on':'');
+  el.innerHTML='<span class="pc-box"></span><span class="pc-name">'+p.name+'</span>'+
+    '<span class="pc-spec">'+p.cpu+'C/'+p.mem+'Gi</span>'+(p.crit?'<span class="pc-crit">关键</span>':'');
+  el.addEventListener('click',()=>{
+    sb2.on[p.id]=!sb2.on[p.id];
+    el.className='podchip'+(sb2.on[p.id]?' on':'');
+    calc2();
+  });
+  podGrid.appendChild(el);
+});
+bindSeg('segTaint2', v=>{sb2.taint=v; calc2();});
+
+function calc2(){
+  const enabled = PODS2.filter(p=>sb2.on[p.id]);
+  const queue = enabled.slice().sort((a,b)=> b.cpu-a.cpu || b.mem-a.mem);
+  const nodes = [0,1,2].map(()=>({cpu:NC.cpu, mem:NC.mem, pods:[]}));
+  const taintOn = sb2.taint==='on';
+  const placed = {}, pendList = [];
+  const lines = [];
+
+  queue.forEach(p=>{
+    let order;
+    if(taintOn){
+      order = p.id==='db' ? [2] : [0,1];
+    }else order = [0,1,2];
+    let hit = -1;
+    for(const i of order){
+      if(nodes[i].cpu>=p.cpu && nodes[i].mem>=p.mem){ hit=i; break; }
+    }
+    if(hit>=0){
+      nodes[hit].cpu=+(nodes[hit].cpu-p.cpu).toFixed(2);
+      nodes[hit].mem=+(nodes[hit].mem-p.mem).toFixed(2);
+      nodes[hit].pods.push(p);
+      placed[p.id]=hit;
+      lines.push('<div class="scr-row">'+p.name+' '+p.cpu+'C/'+p.mem+'Gi → <b>node-'+(hit+1)+'</b> <span class="scr-dim">(余 '+fmt(nodes[hit].cpu,1)+'C/'+fmt(nodes[hit].mem,1)+'Gi)</span></div>');
+    }else{
+      pendList.push(p);
+      lines.push('<div class="scr-row">'+p.name+' '+p.cpu+'C/'+p.mem+'Gi → <b style="color:#ff5c5c">Pending ✗</b> <span class="scr-dim">(无节点满足 requests)</span></div>');
+    }
+  });
+
+  const running = enabled.length - pendList.length;
+  const usedCpu = enabled.filter(p=>placed[p.id]!==undefined).reduce((s,p)=>s+p.cpu,0);
+  const usedMem = enabled.filter(p=>placed[p.id]!==undefined).reduce((s,p)=>s+p.mem,0);
+  const demCpu = enabled.reduce((s,p)=>s+p.cpu,0);
+  const demMem = enabled.reduce((s,p)=>s+p.mem,0);
+  const cpuPct = usedCpu/CL.cpu*100;
+  const memPct = usedMem/CL.mem*100;
+  const critOK = PODS2.filter(p=>p.crit).every(p=>placed[p.id]!==undefined);
+
+  document.getElementById('oPods2').textContent = enabled.length+' / '+PODS2.length+' 启用';
+  document.getElementById('oTaint2').textContent = taintOn?'ON · node-3 仅 db':'OFF';
+
+  drawBar('cpuU2','cpuD2','cpuPct2', CL.cpu, usedCpu, demCpu, 'C');
+  drawBar('memU2','memD2','memPct2', CL.mem, usedMem, demMem, 'Gi');
+
+  document.getElementById('vRun2').innerHTML = running+' <small>/ '+enabled.length+'</small>';
+  document.getElementById('vPend2').textContent = pendList.length?pendList.map(p=>p.name).join(', '):'0';
+  document.getElementById('vCpu2').textContent = fmt(cpuPct,1);
+  document.getElementById('vMem2').textContent = fmt(memPct,1);
+  document.getElementById('roRun2').className='readout '+(pendList.length===0?'good':(critOK?'':'bad'));
+  document.getElementById('roPend2').className='readout '+(pendList.length?'bad':'good');
+  document.getElementById('roCpu2').className='readout '+(cpuPct>=50?'good':'bad');
+  document.getElementById('roMem2').className='readout';
+
+  const warns=[];
+  if(pendList.length) warns.push('Pending:'+pendList.map(p=>p.name).join('/')+' 无节点可摆');
+  if(!critOK) warns.push('关键负载未全部 Running');
+  if(cpuPct<50) warns.push('CPU 利用率 '+fmt(cpuPct,1)+'% < 50%,集群太空,启用更多负载');
+  const w=document.getElementById('warn2');
+  w.style.display=warns.length?'block':'none';
+  w.textContent=warns.join(' / ');
+
+  document.getElementById('trace2').innerHTML =
+    '<div class="scr-title">算式追踪 · CH-02 BIN-PACKING TRACE</div>'+
+    '<div class="scr-row">节点池 = 3 × (3.6C / 7.2Gi) · 排序:cpu↓ mem↓ · 策略:first-fit'+(taintOn?' · <b>node-3 污点 dedicated=db,仅 db 容忍</b>':'')+'</div>'+
+    '<div class="scr-row" style="margin-top:4px"></div>'+lines.join('')+
+    '<div class="scr-row" style="margin-top:4px">已分配 = '+fmt(usedCpu,1)+'C / '+fmt(usedMem,1)+'Gi · CPU 利用率 = '+fmt(usedCpu,1)+' ÷ '+CL.cpu.toFixed(1)+' = <b>'+fmt(cpuPct,1)+'%</b> '+(cpuPct>=50?'<b style="color:#7be495">≥50% ✓</b>':'<b style="color:#ff5c5c">&lt;50% ✗</b>')+'</div>'+
+    '<div class="scr-row">关键负载 db/web×2/api×2 = '+(critOK?'<b style="color:#7be495">全部 Running ✓</b>':'<b style="color:#ff5c5c">有 Pending ✗</b>')+'</div>';
+
+  const pass = critOK && cpuPct>=50;
+  const lamp=document.getElementById('slaLamp2');
+  lamp.className='sla-lamp '+(pass?'pass':'fail');
+  document.getElementById('slaTxt2').textContent = pass?'验收 PASS':(!critOK?'关键负载 Pending':'利用率不足');
+  markClear(2,pass);
+}
+
+/* ============ CH-03 故障排查 ============ */
+const SCEN3 = [
+  {
+    sym:'Deployment web 更新后,Pod 状态 <b>CrashLoopBackOff</b>,RESTARTS 每 30 秒 +1;kubectl logs --previous 输出尾部:Killed,exit code <b>137</b>。',
+    steps:[
+      {label:'第一步 · kubectl 动作', opts:['kubectl top pod','kubectl logs --previous','kubectl apply -f web.yaml','kubectl describe node'], ans:1},
+      {label:'第二步 · 根因', opts:['镜像拉取失败 ImagePullBackOff','内存 limits 太低,容器被 OOMKilled(exit 137)','节点 CPU 耗尽','Service selector 不匹配'], ans:1},
+      {label:'第三步 · 修复', opts:['删除 Pod 强制重建','调高 memory limits(对齐应用实际占用)','把 replicas 从 3 改成 1','更换镜像仓库'], ans:1},
+    ],
+  },
+  {
+    sym:'新部署的 api Pod 一直 <b>Pending</b>;kubectl describe pod 显示 Events:<b>0/3 nodes are available: 3 Insufficient cpu</b>;镜像与节点均正常。',
+    steps:[
+      {label:'第一步 · kubectl 动作', opts:['kubectl logs api-xxx','kubectl apply -f api.yaml','kubectl describe pod api-xxx','kubectl top nodes'], ans:2},
+      {label:'第二步 · 根因', opts:['节点存在未容忍污点','镜像 tag 不存在','requests 超过节点剩余可分配资源','kubelet 证书过期'], ans:2},
+      {label:'第三步 · 修复', opts:['调高 memory limits','配置 readinessProbe','降低 requests 或为集群扩容节点','重启 kube-scheduler'], ans:2},
+    ],
+  },
+  {
+    sym:'Deployment 滚动更新期间监控出现部分 <b>502</b>;新 Pod 启动后约 2 秒就被加入 Service Endpoints;YAML 中<b>未配置任何探针</b>。',
+    steps:[
+      {label:'第一步 · kubectl 动作', opts:['kubectl apply -f deploy.yaml','kubectl top pod','kubectl logs --previous','kubectl describe pod(查探针配置)'], ans:3},
+      {label:'第二步 · 根因', opts:['HPA 缩容过快','内存 limits 过低触发 OOM','镜像版本意外回滚','未配 readinessProbe,新 Pod 未就绪就接流量'], ans:3},
+      {label:'第三步 · 修复', opts:['调大 maxSurge','降低 requests','改用 Recreate 策略','配置 readinessProbe,就绪后再接流量'], ans:3},
+    ],
+  },
+];
+const sb3 = {cur:0, solved:[false,false,false], sel:[[-1,-1,-1],[-1,-1,-1],[-1,-1,-1]]};
+
+document.getElementById('scenTabs').querySelectorAll('.scen-tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.scen-tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    sb3.cur=+b.dataset.s;
+    renderScen();
+  });
+});
+
+function renderScen(){
+  const i = sb3.cur, sc = SCEN3[i], solved = sb3.solved[i];
+  document.getElementById('scenSym').innerHTML = '<b>症状</b> · '+sc.sym;
+  document.getElementById('step3Grid').innerHTML = sc.steps.map((st,si)=>
+    '<div><div class="step3-label"><b>0'+(si+1)+'</b> · '+st.label+'</div>'+
+    st.opts.map((o,oi)=>'<div class="quiz-opt'+(sb3.sel[i][si]===oi?' sel':'')+'" data-s="'+si+'" data-o="'+oi+'"><span class="key">'+'ABCD'[oi]+'</span><span style="font-size:13px">'+esc(o)+'</span></div>').join('')+
+    '</div>'
+  ).join('');
+  const btn = document.getElementById('btnChk3');
+  btn.disabled = solved || sb3.sel[i].some(v=>v<0);
+  btn.textContent = solved?'已排查':'校验此场景';
+  const res = document.getElementById('res3');
+  res.textContent = solved?'CAL OK · 本场景排查正确':'';
+  res.className = 'quiz-result'+(solved?' ok':'');
+  document.getElementById('step3Grid').querySelectorAll('.quiz-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(sb3.solved[i]) return;
+      const si=+el.dataset.s, oi=+el.dataset.o;
+      sb3.sel[i][si]=oi;
+      document.getElementById('step3Grid').querySelectorAll('.quiz-opt[data-s="'+si+'"]').forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');
+      document.getElementById('btnChk3').disabled = sb3.sel[i].some(v=>v<0);
+    });
+  });
+}
+
+document.getElementById('btnChk3').addEventListener('click',()=>{
+  const i = sb3.cur, sc = SCEN3[i];
+  if(sb3.solved[i]) return;
+  const ok = sc.steps.every((st,si)=>sb3.sel[i][si]===st.ans);
+  const res = document.getElementById('res3');
+  if(ok){
+    sb3.solved[i]=true;
+    document.querySelector('.scen-tab[data-s="'+i+'"]').classList.add('cleared');
+    renderScen();
+    if(sb3.solved.every(Boolean)) markClear(3,true);
+  }else{
+    res.textContent='排查有误 · 对照症状重新选择';
+    res.className='quiz-result ng';
+    const err=document.getElementById('ledErr');
+    err.className='led on-r';
+    setTimeout(()=>err.className='led',900);
+  }
+});
+
+document.getElementById('chTabs').querySelectorAll('.ch-tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.ch-tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.sb-panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('sb'+b.dataset.ch).classList.add('on');
+  });
+});
+
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('clock').textContent=
+    [d.getHours(),d.getMinutes(),d.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
+},1000);
+
+document.getElementById('btnReset').addEventListener('click', resetProgress);
+loadProgress();
+renderMatrix();
+selectNode('vm-to-container');
+calc1(); calc2(); renderScen();
+</script>
+</body>
+</html>

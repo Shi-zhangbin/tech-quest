@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>LLM-QUEST · 推理工程控制台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --chassis:#d9d5cc;
+  --panel:#edeae2;
+  --panel2:#e4e0d6;
+  --ink:#1c1b17;
+  --ink2:#57544b;
+  --hair:#1c1b17;
+  --accent:#ff4d00;
+  --screen:#14130f;
+  --amber:#ffb000;
+  --green:#2f9e44;
+  --red:#d92020;
+  --dimled:#b8b3a6;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html,body{background:var(--chassis)}
+body{
+  font-family:"Space Grotesk","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  min-width:1440px;
+  background:
+    radial-gradient(circle at 18px 18px, rgba(28,27,23,.10) 1.2px, transparent 1.3px) 0 0/36px 36px,
+    var(--chassis);
+}
+.mono{font-family:"IBM Plex Mono",monospace}
+.wrap{width:1400px;margin:10px auto 30px}
+
+.plate{
+  background:var(--panel);
+  border:1px solid var(--hair);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 2px 6px rgba(28,27,23,.18);
+  position:relative;
+}
+.screw{position:absolute;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f5f2ea,#8f8b80 70%,#5c594f);
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.55)}
+.screw::after{content:"";position:absolute;left:1px;right:1px;top:50%;height:1px;background:rgba(28,27,23,.7);transform:rotate(38deg)}
+.screw.tl{top:6px;left:6px}.screw.tr{top:6px;right:6px}
+.screw.bl{bottom:6px;left:6px}.screw.br{bottom:6px;right:6px}
+
+.label-micro{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.label-micro b{color:var(--ink)}
+
+header.plate{height:52px;display:flex;align-items:center;gap:18px;padding:0 22px;margin-bottom:10px}
+.brand{font-weight:700;font-size:20px;letter-spacing:.06em}
+.brand em{font-style:normal;color:var(--accent)}
+.header-sep{width:1px;height:30px;background:var(--hair);opacity:.35}
+.header-item{font-size:12px;letter-spacing:.12em;color:var(--ink2)}
+.header-item b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:600}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.led{width:9px;height:9px;border-radius:50%;background:var(--dimled);box-shadow:inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-g{background:var(--green);box-shadow:0 0 6px rgba(47,158,68,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-a{background:var(--amber);box-shadow:0 0 6px rgba(255,176,0,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.on-r{background:var(--red);box-shadow:0 0 6px rgba(217,32,32,.8),inset 0 0 0 1px rgba(28,27,23,.5)}
+.led.pulse{animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.ledpair{display:flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.14em;color:var(--ink2)}
+
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.panel-title{font-size:15px;font-weight:700;letter-spacing:.1em}
+.panel-title::before{content:"";display:inline-block;width:8px;height:8px;background:var(--accent);margin-right:8px;transform:translateY(-1px)}
+.progress-chip{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;
+  border:1px solid var(--hair);padding:2px 8px;background:var(--panel2)}
+
+.matrix-panel{padding:12px 18px 12px;margin-bottom:10px}
+.matrix-wrap{position:relative;width:1352px;height:704px;margin:0 auto;
+  background:
+    linear-gradient(rgba(28,27,23,.05) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(28,27,23,.05) 1px,transparent 1px) 0 0/22px 22px,
+    var(--panel2);
+  border:1px solid var(--hair)}
+#cables{position:absolute;inset:0;pointer-events:none}
+.zone-label{position:absolute;top:5px;font-size:12px;font-weight:700;letter-spacing:.3em;color:var(--ink2);
+  border-bottom:1px solid rgba(28,27,23,.4);padding-bottom:2px}
+.branch-gutter{position:absolute;left:10px;width:80px;font-size:12px;font-weight:700;letter-spacing:.18em;
+  color:var(--ink2);writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;
+  border-right:1px dashed rgba(28,27,23,.35);padding-right:6px;height:120px}
+.module{position:absolute;width:124px;height:100px;background:var(--panel);
+  border:1px solid var(--hair);cursor:pointer;user-select:none;
+  box-shadow:0 2px 0 rgba(28,27,23,.25);transition:transform .08s}
+.module:hover{transform:translateY(-1px)}
+.module .mod-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid rgba(28,27,23,.35)}
+.module .mod-code{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink2)}
+.module .mod-branch{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--accent);font-weight:600}
+.module .mod-name{padding:5px 9px 0;font-size:13px;font-weight:700;line-height:1.22;letter-spacing:.02em}
+.module .mod-sub{padding:2px 9px 0;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink2);
+  letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.module .jacks{position:absolute;bottom:6px;left:9px;right:9px;display:flex;justify-content:space-between}
+.jack{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6d6a60,#26251f 75%);box-shadow:inset 0 0 0 1px rgba(28,27,23,.8)}
+.module .mod-led{margin-left:auto}
+.module.locked{opacity:.55;cursor:not-allowed;
+  background:repeating-linear-gradient(45deg,var(--panel) 0 6px,#e0dcd1 6px 12px)}
+.module.locked:hover{transform:none}
+.module.done{box-shadow:0 2px 0 rgba(28,27,23,.25), inset 0 -3px 0 var(--green)}
+.module.selected{outline:2px solid var(--accent);outline-offset:1px}
+.module .mod-tag{position:absolute;top:-9px;right:6px;background:var(--green);color:#f3efe4;
+  font-size:10px;letter-spacing:.12em;padding:1px 6px;font-family:"IBM Plex Mono",monospace;font-weight:600}
+
+.card-panel{padding:12px 18px 14px;margin-bottom:10px}
+.screen{background:var(--screen);border:1px solid var(--hair);color:var(--amber);
+  font-family:"IBM Plex Mono",monospace;padding:14px 16px;position:relative;overflow:auto}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,176,0,.045) 0 1px,transparent 1px 3px)}
+.screen .scr-title{color:#f5e9cf;font-size:15px;font-weight:600;letter-spacing:.05em;margin-bottom:4px}
+.screen .scr-sub{color:#8f7f57;font-size:12px;letter-spacing:.04em;margin-bottom:10px}
+.screen .scr-row{font-size:12.5px;line-height:1.65;letter-spacing:.02em}
+.screen .scr-row b{color:#ffe1a8;font-weight:600}
+.screen .scr-dim{color:#8f7f57}
+.screen .scr-formula{color:#ffd27a;font-size:12.5px;background:rgba(255,176,0,.07);
+  border-left:2px solid var(--amber);padding:6px 9px;margin:6px 0;line-height:1.65;white-space:pre-wrap}
+.card-empty{display:flex;height:100%;min-height:300px;align-items:center;justify-content:center;
+  color:#8f7f57;font-size:13px;letter-spacing:.1em}
+.card-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:6px 22px;position:relative;z-index:1}
+.sec{margin-bottom:10px}
+.sec-t{color:#f5e9cf;font-size:12.5px;font-weight:600;letter-spacing:.12em;margin-bottom:5px;
+  border-bottom:1px solid rgba(255,176,0,.28);padding-bottom:3px}
+.sec-t::before{content:attr(data-n);color:var(--accent);margin-right:8px}
+.card-scroll{max-height:600px;overflow:auto}
+.res-block{margin-top:4px}
+.res-kind{color:#8f7f57;font-size:11.5px;letter-spacing:.14em;margin:6px 0 3px}
+.res-link{display:block;color:var(--amber);text-decoration:none;font-size:12.5px;line-height:1.5}
+.res-link:hover{color:#ffe1a8;text-decoration:underline}
+.res-meta{color:#8f7f57;font-size:11.5px;line-height:1.5;margin:1px 0 5px 12px}
+.res-meta b{color:#c9b586;font-weight:500}
+.kw-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.kw-chip{font-size:11.5px;color:var(--amber);text-decoration:none;border:1px solid rgba(255,176,0,.4);
+  padding:2px 7px;line-height:1.5}
+.kw-chip:hover{background:rgba(255,176,0,.12);color:#ffe1a8}
+.kw-chip i{font-style:normal;color:#8f7f57;font-size:10.5px;margin-left:4px}
+
+.dgm{margin:4px 0 8px;border:1px solid rgba(255,176,0,.25);padding:8px 10px;background:rgba(255,176,0,.03)}
+.dgm-title{color:#f5e9cf;font-size:12px;font-weight:600;letter-spacing:.08em;margin-bottom:7px}
+.dgm-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:4px}
+.dgm-node{border:1px solid rgba(255,176,0,.45);padding:4px 8px;font-size:11.5px;line-height:1.45;max-width:150px}
+.dgm-node b{display:block;color:#ffe1a8;font-weight:600}
+.dgm-node span{color:var(--amber)}
+.dgm-arrow{color:var(--accent);align-self:center;font-size:12px;font-weight:600}
+.dgm-bar-row{display:grid;grid-template-columns:130px 1fr 190px;gap:8px;align-items:center;margin-bottom:5px;font-size:11.5px}
+.dgm-bar-label{color:#ffe1a8;text-align:right}
+.dgm-bar-track{height:10px;background:rgba(255,176,0,.1);border:1px solid rgba(255,176,0,.25)}
+.dgm-bar-fill{height:100%;background:var(--amber)}
+.dgm-bar-val{color:var(--amber)}
+.dgm-cmp-row{display:grid;grid-template-columns:150px 1fr;gap:10px;font-size:12px;line-height:1.55;
+  padding:3px 0;border-bottom:1px dashed rgba(255,176,0,.18)}
+.dgm-cmp-row:last-child{border-bottom:none}
+.dgm-cmp-row b{color:#ffe1a8;font-weight:600}
+.dgm-tree-row{font-size:12px;line-height:1.7;color:var(--amber)}
+.dgm-tree-row b{color:#ffe1a8;font-weight:600}
+.dgm-tree-row .guide{color:var(--accent)}
+@keyframes dgmFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes dgmWipeL{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+@keyframes dgmWipeR{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes dgmBarGrow{from{width:0}}
+@keyframes dgmSigRun{0%{left:0;opacity:0}6%{opacity:1}94%{opacity:1}100%{left:calc(100% - 6px);opacity:0}}
+@keyframes dgmOrbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes dgmGlow{0%,14%{opacity:1;border-color:var(--amber);box-shadow:0 0 9px rgba(255,176,0,.5)}45%,100%{opacity:.5;box-shadow:none}}
+.dgm-node,.dgm-arrow,.dgm-cmp-row,.dgm-tree-row{opacity:0}
+.dgm-flow{position:relative}
+.dgm-sig{position:absolute;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;
+  background:var(--amber);box-shadow:0 0 7px rgba(255,176,0,.9)}
+.dgm-loop{position:relative;height:252px;margin-top:4px}
+.dgm-loop-ring{position:absolute;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;
+  border:1px dashed rgba(255,176,0,.35);border-radius:50%}
+.dgm-loop-orbit{position:absolute;left:50%;top:50%;width:0;height:0;animation:dgmOrbit linear infinite}
+.dgm-loop-dot{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--amber);
+  box-shadow:0 0 7px rgba(255,176,0,.9);transform:translate(-3px,-98px)}
+.dgm-loop-node{position:absolute;transform:translate(-50%,-50%);border:1px solid rgba(255,176,0,.4);
+  padding:4px 8px;font-size:11.5px;line-height:1.4;max-width:142px;text-align:center;
+  background:var(--screen);opacity:.5;animation:dgmGlow linear infinite}
+.dgm-loop-node b{display:block;color:#ffe1a8;font-weight:600}
+.dgm-loop-node span{color:var(--amber)}
+.dgm-anim{line-height:0}
+
+.quiz{margin-top:10px;border:1px solid var(--hair);background:var(--panel2);padding:10px 14px 12px}
+.quiz-q{font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.5}
+.quiz-q .qtag{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--panel);
+  background:var(--ink);padding:1px 7px;letter-spacing:.12em;margin-right:8px;vertical-align:2px}
+.quiz-opt{display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 9px;margin-bottom:5px;
+  border:1px solid rgba(28,27,23,.4);cursor:pointer;background:var(--panel)}
+.quiz-opt:hover{border-color:var(--ink)}
+.quiz-opt.sel{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.quiz-opt .key{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--ink2)}
+.quiz-foot{display:flex;align-items:center;gap:12px;margin-top:8px}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.1em;
+  padding:7px 16px;background:var(--ink);color:#f3efe4;border:1px solid var(--hair);cursor:pointer;
+  box-shadow:0 2px 0 rgba(28,27,23,.4)}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.quiz-result{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.06em}
+.quiz-result.ok{color:var(--green)}
+.quiz-result.ng{color:var(--red)}
+.quiz-explain{display:none;margin-top:8px;font-size:13px;line-height:1.6;color:var(--ink2);
+  border-left:3px solid var(--green);padding:4px 10px;background:rgba(47,158,68,.06)}
+.quiz-explain.show{display:block}
+
+.sandbox{padding:12px 18px 12px}
+.ch-tabs{display:flex;gap:0;border:1px solid var(--hair)}
+.ch-tab{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.05em;
+  padding:7px 18px;background:var(--panel2);border:none;border-right:1px solid var(--hair);cursor:pointer;color:var(--ink2)}
+.ch-tab:last-child{border-right:none}
+.ch-tab:hover{color:var(--ink)}
+.ch-tab.on{background:var(--ink);color:#f3efe4}
+.ch-tab.on em{font-style:normal;color:var(--accent)}
+.ch-tab .ch-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dimled);margin-right:7px;
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.4)}
+.ch-tab.cleared .ch-dot{background:var(--green);box-shadow:0 0 5px rgba(47,158,68,.8)}
+.sb-panel{display:none;position:relative}
+.sb-panel.on{display:block}
+.sb-grid{display:flex;gap:18px;margin-top:12px}
+.sb-controls{flex:0 0 452px;border-right:1px solid rgba(28,27,23,.3);padding-right:18px}
+.ctl-group{margin-bottom:9px}
+.ctl-label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.12em;color:var(--ink2);
+  text-transform:uppercase;margin-bottom:6px}
+.ctl-label output{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent);font-size:13px;letter-spacing:0}
+.ctl-fixed{font-size:12px;line-height:1.7;color:var(--ink2);border:1px dashed rgba(28,27,23,.4);
+  padding:6px 10px;margin-bottom:10px;background:var(--panel2)}
+.ctl-fixed b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:600}
+.seg{display:flex;border:1px solid var(--hair)}
+.seg button{flex:1;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.02em;
+  padding:6px 2px;background:var(--panel2);border:none;border-right:1px solid var(--hair);cursor:pointer;color:var(--ink2)}
+.seg button:last-child{border-right:none}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--ink);color:#f3efe4}
+input[type=range]{-webkit-appearance:none;width:100%;height:26px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:
+  repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 10%),rgba(28,27,23,.3)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:24px;margin-top:-10px;
+  background:linear-gradient(180deg,#f7f4ec,#c9c5b9);border:1px solid var(--hair);
+  box-shadow:0 2px 3px rgba(28,27,23,.35);border-radius:2px}
+input[type=range]::-moz-range-track{height:4px;background:rgba(28,27,23,.35)}
+input[type=range]::-moz-range-thumb{width:15px;height:23px;background:linear-gradient(180deg,#f7f4ec,#c9c5b9);
+  border:1px solid var(--hair);border-radius:2px}
+
+.sb-right{flex:1;display:flex;gap:18px;min-width:0}
+.sb-mid{flex:1.15;min-width:0;display:flex;flex-direction:column}
+.sb-readouts{flex:0 0 300px;display:flex;flex-direction:column;gap:8px}
+
+.membar-zone{margin-bottom:8px}
+.membar{position:relative;height:26px;border:1px solid var(--hair);background:#dcd8cd;display:flex;overflow:hidden}
+.membar .segW{background:var(--ink)}
+.membar .segK{background:var(--accent)}
+.membar .segA{background:#8a8578}
+.membar .segF{background:repeating-linear-gradient(45deg,#c2bdae 0 4px,#b0ab9c 4px 8px)}
+.membar .segX{position:absolute;right:0;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--red) 0 5px,#8f1010 5px 10px)}
+.membar-cap{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(28,27,23,.6)}
+.mem-legend{display:flex;gap:14px;margin-top:5px;font-size:12px;letter-spacing:.06em;color:var(--ink2)}
+.mem-legend i{display:inline-block;width:9px;height:9px;margin-right:4px;transform:translateY(1px)}
+.mem-pct{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600}
+.mem-pct.oom{color:var(--red)}
+
+.readout{border:1px solid var(--hair);background:var(--panel2);padding:5px 10px 6px}
+.readout .ro-label{font-size:12px;letter-spacing:.12em;color:var(--ink2);text-transform:uppercase}
+.readout .ro-val{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;line-height:1.2;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.readout .ro-val small{font-size:12px;font-weight:500;color:var(--ink2)}
+.readout.bad .ro-val{color:var(--red)}
+.readout.good .ro-val{color:var(--green)}
+
+.trace{flex:1;display:flex;flex-direction:column}
+.trace .screen{flex:1;font-size:12px;min-height:250px;max-height:340px}
+.trace .scr-row{line-height:1.62;white-space:pre-wrap}
+.warn-line{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--red);
+  border:1px solid var(--red);background:rgba(217,32,32,.06);padding:5px 9px;letter-spacing:.03em;line-height:1.5}
+.sla-strip{display:flex;align-items:center;gap:12px;border:1px solid var(--hair);
+  background:var(--panel2);padding:9px 12px;flex-direction:column;align-items:stretch;gap:6px}
+.sla-strip .sla-txt{font-size:13px;font-weight:700;letter-spacing:.04em}
+.sla-strip .sla-sub{font-size:12px;color:var(--ink2);font-family:"IBM Plex Mono",monospace;line-height:1.6}
+.sla-lamp{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:13px;font-weight:600;letter-spacing:.12em}
+.sla-lamp .lampbox{width:14px;height:14px;border-radius:50%;background:var(--dimled);
+  box-shadow:inset 0 0 0 1px rgba(28,27,23,.55)}
+.sla-lamp.pass .lampbox{background:var(--green);box-shadow:0 0 10px rgba(47,158,68,.9),inset 0 0 0 1px rgba(28,27,23,.5)}
+.sla-lamp.pass{color:var(--green)}
+.sla-lamp.fail{color:var(--ink2)}
+.clear-banner{display:none;margin-top:10px;border:1px solid var(--ink);background:var(--ink);color:#f3efe4;
+  padding:10px 14px;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;letter-spacing:.08em}
+.clear-banner em{font-style:normal;color:var(--amber)}
+.clear-banner.show{display:block}
+.stamp{position:absolute;top:-8px;right:8px;display:none;border:2px solid var(--green);color:var(--green);
+  font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;letter-spacing:.3em;padding:3px 12px 3px 16px;
+  transform:rotate(-7deg);background:rgba(237,234,226,.85);z-index:2}
+.stamp.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="plate">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="brand">LLM<em>-</em>QUEST</div>
+    <div class="header-sep"></div>
+    <div class="header-item">推理工程控制台 <b>REV.B</b></div>
+    <div class="header-item">机型 <b>LQ-70B</b></div>
+    <div class="header-item">阶段 <b>01 / 推理</b></div>
+    <div class="header-item">沙盒通关 <b id="hClear">0 / 3</b></div>
+    <div class="header-item"><button id="btnReset" style="font-family:inherit;font-size:10px;letter-spacing:.1em;padding:2px 8px;background:none;border:1px solid var(--ink2);color:var(--ink2);cursor:pointer" title="清空本地进度">RST</button></div>
+    <div class="header-right">
+      <div class="ledpair"><span class="led on-g"></span>PWR</div>
+      <div class="ledpair"><span class="led on-a pulse"></span>BUS</div>
+      <div class="ledpair"><span class="led" id="ledErr"></span>ERR</div>
+      <div class="header-item mono" id="clock" style="font-weight:600;color:var(--ink)">00:00:00</div>
+    </div>
+  </header>
+
+  <section class="plate matrix-panel">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">技能矩阵 · 模块 ×26</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="progress-chip" id="progChip">已校准 0 / 26</span>
+        <span class="label-micro">跳线 = 依赖 · 绿灯 = 已校准 · 红 LED = 锁定</span>
+      </div>
+    </div>
+    <div class="matrix-wrap" id="matrix">
+      <svg id="cables" width="1352" height="704"></svg>
+    </div>
+  </section>
+
+  <section class="plate card-panel">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">技术卡片 · 示波读数</div>
+      <span class="label-micro" id="cardCh">CH -- · 未选模块</span>
+    </div>
+    <div id="cardBody">
+      <div class="screen"><span class="card-empty">-- 在上方矩阵中选择一个模块 --</span></div>
+    </div>
+  </section>
+
+  <section class="plate sandbox">
+    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+    <div class="panel-head">
+      <div class="panel-title">沙盒关卡 · 仪器面板</div>
+      <div class="ch-tabs" id="chTabs">
+        <button class="ch-tab on" data-ch="1"><span class="ch-dot"></span>CH-01 <em>「70B 上线」</em></button>
+        <button class="ch-tab" data-ch="2"><span class="ch-dot"></span>CH-02 <em>「高并发服务」</em></button>
+        <button class="ch-tab" data-ch="3"><span class="ch-dot"></span>CH-03 <em>「长上下文 RAG」</em></button>
+      </div>
+    </div>
+
+    <div class="sb-panel on" id="sb1">
+      <div class="stamp" id="stamp1">通关</div>
+      <div class="sb-grid">
+        <div class="sb-controls">
+          <div class="ctl-fixed">任务:70B 模型上线 · prompt 固定 <b>2000</b> tokens · SLA:不 OOM 且 吞吐 ≥ <b>150</b> tok/s 且 TTFT ≤ <b>2000</b> ms</div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>GPU 配置</span><output id="oGpu1"></output></div>
+            <div class="seg" id="segGpu1">
+              <button data-v="a100x1" class="on">1×A100</button>
+              <button data-v="a100x2">2×A100</button>
+              <button data-v="h100x1">1×H100</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>量化档位</span><output id="oQuant1"></output></div>
+            <div class="seg" id="segQuant1">
+              <button data-v="fp16" class="on">FP16</button>
+              <button data-v="int8">INT8</button>
+              <button data-v="int4">INT4</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>KV Cache 结构</span><output id="oKv1"></output></div>
+            <div class="seg" id="segKv1">
+              <button data-v="mha">MHA ×1</button>
+              <button data-v="gqa" class="on">GQA ×0.125</button>
+              <button data-v="mla">MLA 576维</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>MAX BATCH</span><output id="oBatch1"></output></div>
+            <input type="range" id="rBatch1" min="1" max="32" step="1" value="8">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>MAX CONTEXT</span><output id="oCtx1"></output></div>
+            <input type="range" id="rCtx1" min="1024" max="32768" step="1024" value="4096">
+          </div>
+        </div>
+        <div class="sb-right">
+          <div class="sb-mid">
+            <div class="membar-zone">
+              <div class="ctl-label"><span>显存占用分段(权重 / KV / 激活 / 碎片)</span><span class="mem-pct" id="memPct1"></span></div>
+              <div class="membar">
+                <div class="segW" id="segW1"></div><div class="segK" id="segK1"></div>
+                <div class="segA" id="segA1"></div><div class="segF" id="segF1"></div>
+                <div class="segX" id="segX1" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="mem-legend">
+                <span><i style="background:var(--ink)"></i>权重</span>
+                <span><i style="background:var(--accent)"></i>KV cache</span>
+                <span><i style="background:#8a8578"></i>激活缓冲</span>
+                <span><i style="background:repeating-linear-gradient(45deg,#c2bdae 0 3px,#b0ab9c 3px 6px)"></i>碎片预留</span>
+              </div>
+            </div>
+            <div class="trace"><div class="screen" id="trace1"></div></div>
+          </div>
+          <div class="sb-readouts">
+            <div class="readout" id="roTps1"><div class="ro-label">估算吞吐 · Decode</div>
+              <div class="ro-val"><span id="vTps1">--</span> <small>tok/s</small></div></div>
+            <div class="readout" id="roTtft1"><div class="ro-label">TTFT · 首 Token 延迟</div>
+              <div class="ro-val"><span id="vTtft1">--</span> <small>ms</small></div></div>
+            <div class="readout" id="roTpot1"><div class="ro-label">TPOT · 每 Token 延迟</div>
+              <div class="ro-val"><span id="vTpot1">--</span> <small>ms</small></div></div>
+            <div class="readout" id="roMem1"><div class="ro-label">总显存 / 容量</div>
+              <div class="ro-val" style="font-size:17px"><span id="vMem1">--</span></div></div>
+            <div class="sla-strip">
+              <div class="sla-txt">SLA 目标</div>
+              <div class="sla-sub">不 OOM · 吞吐 ≥ 150 tok/s · TTFT ≤ 2000 ms</div>
+              <div class="sla-lamp fail" id="slaLamp1"><span class="lampbox"></span><span id="slaTxt1">NOT READY</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner1">LEVEL CLEAR · <em>70B 已达标上线</em> · 显存-带宽-算力三角博弈通关</div>
+    </div>
+
+    <div class="sb-panel" id="sb2">
+      <div class="stamp" id="stamp2">通关</div>
+      <div class="sb-grid">
+        <div class="sb-controls">
+          <div class="ctl-fixed">固定:Llama-13B FP16 · 权重 <b>26</b> GB · 1×A100 80G · MHA <b>32</b> kv_heads · <b>40</b> 层 · head_dim <b>128</b><br>
+          流量:每请求平均输出 <b>200</b> tokens · prompt <b>500</b> tokens · 实际平均 ctx ≈ <b>1500</b></div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>批处理模式</span><output id="oMode2"></output></div>
+            <div class="seg" id="segMode2">
+              <button data-v="static" class="on">STATIC</button>
+              <button data-v="cont">CONTINUOUS</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>PagedAttention</span><output id="oPaged2"></output></div>
+            <div class="seg" id="segPaged2">
+              <button data-v="off" class="on">OFF · 全额预留</button>
+              <button data-v="on">ON · 按需分页</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>MAX BATCH</span><output id="oBatch2"></output></div>
+            <input type="range" id="rBatch2" min="4" max="64" step="1" value="16">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>流量 QPS</span><output id="oQps2"></output></div>
+            <input type="range" id="rQps2" min="1" max="16" step="1" value="4">
+          </div>
+        </div>
+        <div class="sb-right">
+          <div class="sb-mid">
+            <div class="membar-zone">
+              <div class="ctl-label"><span>显存占用分段(权重 / KV 分配 / 激活)</span><span class="mem-pct" id="memPct2"></span></div>
+              <div class="membar">
+                <div class="segW" id="segW2"></div><div class="segK" id="segK2"></div>
+                <div class="segA" id="segA2"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="mem-legend">
+                <span><i style="background:var(--ink)"></i>权重 26GB</span>
+                <span><i style="background:var(--accent)"></i>KV 已分配</span>
+                <span><i style="background:#8a8578"></i>激活缓冲 4GB</span>
+              </div>
+            </div>
+            <div class="trace"><div class="screen" id="trace2"></div></div>
+          </div>
+          <div class="sb-readouts">
+            <div class="readout" id="roSup2"><div class="ro-label">供给 · 服务吞吐</div>
+              <div class="ro-val"><span id="vSup2">--</span> <small>tok/s</small></div></div>
+            <div class="readout" id="roDem2"><div class="ro-label">需求 · 流量负载</div>
+              <div class="ro-val"><span id="vDem2">--</span> <small>tok/s</small></div></div>
+            <div class="readout" id="roTpot2"><div class="ro-label">TPOT · 每 Token 延迟</div>
+              <div class="ro-val"><span id="vTpot2">--</span> <small>ms</small></div></div>
+            <div class="readout" id="roConc2"><div class="ro-label">实际并发 / KV 容量</div>
+              <div class="ro-val" style="font-size:17px"><span id="vConc2">--</span></div></div>
+            <div class="warn-line" id="warn2" style="display:none"></div>
+            <div class="sla-strip">
+              <div class="sla-txt">SLA 目标</div>
+              <div class="sla-sub">供给 ≥ 需求 · TPOT ≤ 80 ms</div>
+              <div class="sla-lamp fail" id="slaLamp2"><span class="lampbox"></span><span id="slaTxt2">NOT READY</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner2">LEVEL CLEAR · <em>高并发服务达标</em> · 调度与显存管理协同通关</div>
+    </div>
+
+    <div class="sb-panel" id="sb3">
+      <div class="stamp" id="stamp3">通关</div>
+      <div class="sb-grid">
+        <div class="sb-controls">
+          <div class="ctl-fixed">固定:70B INT4 · 权重 <b>35</b> GB · GQA 8 kv_heads · 1×H100 80G<br>
+          场景:32K ctx 请求,其中 <b>24K</b> 为共享系统前缀,增量 <b>8K</b>/请求</div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>Prefix Caching</span><output id="oPc3"></output></div>
+            <div class="seg" id="segPc3">
+              <button data-v="off" class="on">OFF</button>
+              <button data-v="on">ON · 前缀复用</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>Chunked Prefill 块大小</span><output id="oChunk3"></output></div>
+            <div class="seg" id="segChunk3">
+              <button data-v="off" class="on">OFF</button>
+              <button data-v="8192">8192</button>
+              <button data-v="2048">2048</button>
+              <button data-v="512">512</button>
+            </div>
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>缓存命中率</span><output id="oHit3"></output></div>
+            <input type="range" id="rHit3" min="30" max="95" step="5" value="60">
+          </div>
+          <div class="ctl-group">
+            <div class="ctl-label"><span>并发请求数</span><output id="oConc3"></output></div>
+            <input type="range" id="rConc3" min="1" max="16" step="1" value="4">
+          </div>
+        </div>
+        <div class="sb-right">
+          <div class="sb-mid">
+            <div class="membar-zone">
+              <div class="ctl-label"><span>显存占用分段(权重 / KV / 激活)</span><span class="mem-pct" id="memPct3"></span></div>
+              <div class="membar">
+                <div class="segW" id="segW3"></div><div class="segK" id="segK3"></div>
+                <div class="segA" id="segA3"></div>
+                <div class="segX" id="segX3" style="display:none"></div>
+                <div class="membar-cap"></div>
+              </div>
+              <div class="mem-legend">
+                <span><i style="background:var(--ink)"></i>权重 35GB</span>
+                <span><i style="background:var(--accent)"></i>KV cache</span>
+                <span><i style="background:#8a8578"></i>激活缓冲 4GB</span>
+              </div>
+            </div>
+            <div class="trace"><div class="screen" id="trace3"></div></div>
+          </div>
+          <div class="sb-readouts">
+            <div class="readout" id="roP503"><div class="ro-label">p50 TTFT</div>
+              <div class="ro-val"><span id="vP503">--</span> <small>ms</small></div></div>
+            <div class="readout" id="roWavg3"><div class="ro-label">加权平均 TTFT</div>
+              <div class="ro-val"><span id="vWavg3">--</span> <small>ms</small></div></div>
+            <div class="readout" id="roThr3"><div class="ro-label">Decode 吞吐</div>
+              <div class="ro-val"><span id="vThr3">--</span> <small>tok/s</small></div></div>
+            <div class="readout" id="roMem3"><div class="ro-label">总显存 / 容量</div>
+              <div class="ro-val" style="font-size:17px"><span id="vMem3">--</span></div></div>
+            <div class="sla-strip">
+              <div class="sla-txt">SLA 目标</div>
+              <div class="sla-sub">p50 TTFT ≤ 1500 ms · 并发 ≥ 4 不 OOM</div>
+              <div class="sla-lamp fail" id="slaLamp3"><span class="lampbox"></span><span id="slaTxt3">NOT READY</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clear-banner" id="banner3">LEVEL CLEAR · <em>长上下文 RAG 达标</em> · 前缀复用与切块调度通关</div>
+    </div>
+  </section>
+</div>
+
+<script src="llm-quest-inference-content.js"></script>
+<script>
+const C = window.LLM_QUEST_CONTENT;
+const NODES = {};
+const ORDER = [];
+let _pi=0, _mi=0;
+C.nodes.forEach(n=>{
+  n.code = n.branch==='prereq' ? 'P'+String(++_pi).padStart(2,'0') : 'M'+String(++_mi).padStart(2,'0');
+  NODES[n.id]=n; ORDER.push(n.id);
+});
+const BR = {prereq:'PREREQ',base:'BASE',kv:'KV CACHE',quant:'QUANT',serve:'SERVING',arch:'ARCH'};
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (v,d=1)=>v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+
+const GUT=96, GX=160, GY=140, MW=124, MH=100, TOP=34;
+const pos = n => ({x:GUT+(n.grid.col-1)*GX, y:TOP+n.grid.row*GY});
+const state = {};
+let selected = null;
+
+const SAVE_KEY = 'llmq-inference-v1';
+function saveProgress(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify({done:Object.keys(state).filter(k=>state[k]==='done'), cleared:cleared})); }catch(e){}
+}
+function loadProgress(){
+  let d = null;
+  try{ d = JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
+  if(!d) return;
+  (d.done||[]).forEach(id=>{ if(NODES[id]) state[id]='done'; });
+  if(d.cleared) [1,2,3].forEach(ch=>{ if(d.cleared[ch]) markClear(ch,true); });
+}
+function resetProgress(){
+  if(!confirm('清空所有校准进度与沙盒通关记录？')) return;
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  location.reload();
+}
+
+function nodeStatus(id){
+  if(state[id]) return state[id];
+  const n = NODES[id];
+  return n.deps.every(p=>state[p]==='done') ? 'open' : 'locked';
+}
+function doneCount(){ return ORDER.filter(id=>state[id]==='done').length; }
+
+const matrix = document.getElementById('matrix');
+const cables = document.getElementById('cables');
+
+function renderMatrix(){
+  matrix.querySelectorAll('.module,.branch-gutter,.zone-label').forEach(e=>e.remove());
+  [['PREREQ',1,8,null],['BASE',1,3,TOP+GY-28],['ARCH',5,6,TOP+GY-28]].forEach(z=>{
+    const el = document.createElement('div');
+    el.className='zone-label';
+    el.style.left=(GUT+(z[1]-1)*GX)+'px';
+    el.style.width=((z[2]-z[1]+1)*GX-28)+'px';
+    if(z[3]!==null) el.style.top=z[3]+'px';
+    el.textContent=z[0];
+    matrix.appendChild(el);
+  });
+  [['KV CACHE',2],['QUANT',3],['SERVING',4]].forEach(g=>{
+    const el = document.createElement('div');
+    el.className='branch-gutter';
+    el.style.top=(TOP+g[1]*GY-10)+'px';
+    el.textContent=g[0];
+    matrix.appendChild(el);
+  });
+  ORDER.forEach(id=>{
+    const n = NODES[id], st = nodeStatus(id), p = pos(n);
+    const el = document.createElement('div');
+    el.className='module'+(st==='locked'?' locked':'')+(st==='done'?' done':'')+(selected===id?' selected':'');
+    el.style.left=p.x+'px'; el.style.top=p.y+'px';
+    const ledCls = st==='done'?'led on-g':st==='open'?'led on-a pulse':'led on-r';
+    el.innerHTML =
+      '<div class="mod-head"><span class="mod-code">'+n.code+'</span><span class="mod-branch">'+BR[n.branch]+'</span><span class="'+ledCls+' mod-led" style="width:9px;height:9px;border-radius:50%"></span></div>'+
+      '<div class="mod-name">'+esc(n.name)+'</div>'+
+      '<div class="mod-sub">'+esc(n.en)+'</div>'+
+      '<div class="jacks"><span class="jack"></span><span class="jack"></span></div>'+
+      (st==='done'?'<div class="mod-tag">CAL OK</div>':'');
+    el.addEventListener('click',()=>selectNode(id));
+    matrix.appendChild(el);
+  });
+  renderCables();
+  document.getElementById('progChip').textContent = '已校准 '+doneCount()+' / '+ORDER.length;
+}
+
+function renderCables(){
+  cables.innerHTML='';
+  ORDER.forEach(id=>{
+    const n = NODES[id];
+    n.deps.forEach(pid=>{
+      const a = NODES[pid], pa = pos(a), pb = pos(n);
+      const dx = pb.x-pa.x, dy = pb.y-pa.y;
+      let x1,y1,x2,y2;
+      if(Math.abs(dx) >= Math.abs(dy)){
+        x1 = dx>=0 ? pa.x+MW : pa.x;  y1 = pa.y+MH-12;
+        x2 = dx>=0 ? pb.x : pb.x+MW;  y2 = pb.y+MH-12;
+      }else{
+        x1 = pa.x+MW/2; y1 = dy>=0 ? pa.y+MH : pa.y;
+        x2 = pb.x+MW/2; y2 = dy>=0 ? pb.y : pb.y+MH;
+      }
+      const st = nodeStatus(id), pst = nodeStatus(pid);
+      let stroke='#a49f92', dash=' stroke-dasharray="4 4"', w=1.5;
+      if(pst==='done' && st!=='locked'){ stroke='#ff4d00'; dash=''; w=2.5; }
+      if(st==='done'){ stroke='#2f9e44'; dash=''; w=2.5; }
+      const mx=(x1+x2)/2;
+      cables.innerHTML += '<path d="M '+x1+' '+y1+' C '+mx+' '+y1+', '+mx+' '+y2+', '+x2+' '+y2+'" fill="none" stroke="'+stroke+'" stroke-width="'+w+'"'+dash+'/>';
+    });
+  });
+}
+
+const AC={amber:'#ffb000',hi:'#ffe1a8',dim:'#8f7f57',gold:'#c9a24d',accent:'#ff4d00',green:'#3ddc68',red:'#ff5c5c'};
+function aGrid(ctx,W,H){
+  ctx.fillStyle='#171510';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,176,0,.07)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=.5;x<W;x+=20){ctx.moveTo(x,0);ctx.lineTo(x,H);}
+  for(let y=.5;y<H;y+=20){ctx.moveTo(0,y);ctx.lineTo(W,y);}
+  ctx.stroke();
+}
+function aText(ctx,s,x,y,color,align,size){
+  ctx.fillStyle=color||AC.amber;
+  ctx.font=(size||11)+'px "IBM Plex Mono",monospace';
+  ctx.textAlign=align||'left';ctx.textBaseline='alphabetic';
+  ctx.fillText(s,x,y);
+}
+function srnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x);}
+function aHatch(ctx,x,y,w,h,color){
+  if(w<=0||h<=0)return;
+  ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();
+  for(let d=-h;d<w;d+=6){ctx.moveTo(x+d,y+h);ctx.lineTo(x+d+h,y);}
+  ctx.stroke();ctx.restore();
+}
+function aVec(ctx,cx,cy,r,ang,color){
+  const x=cx+Math.cos(ang)*r,y=cy+Math.sin(ang)*r;
+  ctx.strokeStyle=color;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();ctx.lineWidth=1;
+  ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();
+}
+
+const ANIM={
+
+decodeLoop(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const TOKS=['The',' model',' reads',' 140',' GB',' every',' step',' ∎'];
+  const N=8,STEP=.85,T=N*STEP+1.3,lt=t%T;
+  const n=Math.min(N,Math.floor(lt/STEP));
+  aText(ctx,'每步重读权重 140 GB · step '+n+' / '+N,14,22,AC.hi);
+  aText(ctx,'prefill 后逐 token 自回归生成',14,38,AC.dim,'left',10);
+  const cw=Math.min(60,(W-28-(N-1)*4)/N),y0=H-46;
+  for(let i=0;i<N;i++){
+    const x=14+i*(cw+4);
+    ctx.strokeStyle='rgba(255,176,0,.35)';
+    ctx.strokeRect(x+.5,y0+.5,cw,28);
+    if(i<n){
+      ctx.globalAlpha=Math.min(1,(lt-i*STEP)/.15);
+      ctx.fillStyle='rgba(255,176,0,.16)';ctx.fillRect(x+1,y0+1,cw-1,27);
+      aText(ctx,TOKS[i],x+cw/2,y0+19,AC.amber,'center',10);
+      ctx.globalAlpha=1;
+    }
+    if(i===n-1){ctx.strokeStyle=AC.accent;ctx.strokeRect(x-1.5,y0-1.5,cw+3,31);}
+  }
+  if(n<N){
+    const step=n,wAnim=Math.min(1,(lt-n*STEP)/.3);
+    const ps=[.42+.28*srnd(step+1)];
+    for(let k=1;k<5;k++)ps.push((1-ps[0])*srnd(step*7+k)*.9);
+    const sum=ps.reduce((a,b)=>a+b,0),pr=ps.map(p=>p/sum);
+    const idx=[0,1,2,3,4].sort((a,b)=>pr[b]-pr[a]);
+    const bx=W-240,bw=110,by=58,bh=14;
+    aText(ctx,'next-token 分布 · top5',bx,by-10,AC.dim,'left',10);
+    idx.forEach((ii,r)=>{
+      const y=by+r*(bh+12);
+      aText(ctx,'cand_'+(ii+1),bx,y+11,AC.dim,'left',10);
+      ctx.fillStyle='rgba(255,176,0,.12)';ctx.fillRect(bx+58,y,bw,bh);
+      ctx.fillStyle=r===0?AC.amber:'rgba(255,176,0,.4)';
+      ctx.fillRect(bx+58,y,bw*pr[ii]*wAnim,bh);
+      aText(ctx,(pr[ii]*100).toFixed(1)+'%',bx+58+bw+6,y+11,r===0?AC.hi:AC.dim,'left',10);
+    });
+  }else{
+    aText(ctx,'∎ 序列完成 · 循环重启',W-240,64,AC.dim,'left',10);
+  }
+},
+
+kvGrow(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const MAXN=16,STEP=.38,T=MAXN*STEP+1.5,lt=t%T;
+  const n=Math.min(MAXN,Math.floor(lt/STEP));
+  aText(ctx,'KV/token = 2×L×h×d×2B = 0.64 MB',14,20,AC.dim,'left',10);
+  aText(ctx,'n = '+n+' · cache = '+(n*0.64).toFixed(2)+' MB',14,38,AC.hi);
+  aText(ctx,'已生成序列',14,60,AC.dim,'left',10);
+  for(let i=0;i<MAXN;i++){
+    const col=i<8?0:1,row=i%8;
+    const x=14+col*54,y=68+row*24;
+    ctx.strokeStyle='rgba(255,176,0,.3)';ctx.strokeRect(x+.5,y+.5,46,18);
+    if(i<n){
+      ctx.fillStyle='rgba(255,176,0,.2)';ctx.fillRect(x+1,y+1,45,17);
+      aText(ctx,'t'+i,x+23,y+13,AC.amber,'center',10);
+    }
+  }
+  const gx=W-320,gy=64,bw=70,bh=42,gap=7;
+  aText(ctx,'KV CACHE POOL',gx,gy-10,AC.dim,'left',10);
+  for(let i=0;i<MAXN;i++){
+    const r=Math.floor(i/4),c=i%4;
+    const x=gx+c*(bw+gap),y=gy+r*(bh+gap);
+    ctx.strokeStyle='rgba(255,176,0,.25)';ctx.strokeRect(x+.5,y+.5,bw,bh);
+    if(i<n){
+      ctx.fillStyle='rgba(255,176,0,.12)';ctx.fillRect(x+1,y+1,bw-1,bh-1);
+      ctx.fillStyle='rgba(255,176,0,.32)';ctx.fillRect(x+1,y+1,bw/2-1,bh-1);
+      aText(ctx,'K',x+bw*.25,y+bh/2+4,AC.hi,'center',10);
+      aText(ctx,'V',x+bw*.75,y+bh/2+4,AC.amber,'center',10);
+      if(i===n-1){ctx.strokeStyle=AC.accent;ctx.strokeRect(x-1.5,y-1.5,bw+3,bh+3);}
+    }
+  }
+  aText(ctx,'旧块不变 · 每步只 +1 块(缓存复用)',gx,gy+4*(bh+gap)+6,AC.dim,'left',10);
+},
+
+attnGrid(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const N=8,cell=24,pad=3,ox=70,oy=60;
+  const SW=.42,T=N*SW+1.6,lt=t%T;
+  aText(ctx,'self-attention · N=8',14,22,AC.hi);
+  aText(ctx,'O(N²) 矩阵 · causal mask · 第 i 行只看前 i+1 格',14,38,AC.dim,'left',10);
+  for(let j=0;j<N;j++)aText(ctx,'t'+j,ox+pad+j*(cell+pad)+cell/2,oy-8,AC.dim,'center',9);
+  for(let i=0;i<N;i++)aText(ctx,'q'+i,ox-8,oy+pad+i*(cell+pad)+cell-8,AC.dim,'right',9);
+  for(let i=0;i<N;i++){
+    const rp=Math.max(0,Math.min(1,lt/SW-i));
+    let s=0;const ws=[];
+    for(let k=0;k<=i;k++){const w=Math.exp(-(i-k)*.55);ws.push(w);s+=w;}
+    for(let j=0;j<N;j++){
+      const x=ox+pad+j*(cell+pad),y=oy+pad+i*(cell+pad);
+      if(j>i){
+        ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x,y,cell,cell);
+        ctx.strokeStyle='rgba(255,176,0,.08)';ctx.strokeRect(x+.5,y+.5,cell-1,cell-1);
+        continue;
+      }
+      ctx.fillStyle='rgba(255,176,0,.06)';ctx.fillRect(x,y,cell,cell);
+      const frac=Math.max(0,Math.min(1,rp*(i+1)-j));
+      if(frac>0){
+        const p=ws[j]/s;
+        ctx.globalAlpha=frac;
+        ctx.fillStyle='rgba(255,176,0,'+Math.min(.95,.12+p*2.4).toFixed(3)+')';
+        ctx.fillRect(x,y,cell,cell);
+        ctx.globalAlpha=1;
+      }
+    }
+  }
+  if(lt<N*SW){
+    const cur=Math.max(0,Math.floor(lt/SW));
+    ctx.strokeStyle=AC.accent;
+    ctx.strokeRect(ox+pad-2.5,oy+pad+cur*(cell+pad)-2.5,(cur+1)*(cell+pad)+2,cell+4);
+  }
+  const lx=ox+N*(cell+pad)+24;
+  aText(ctx,'亮度 = softmax 权重',lx,oy+16,AC.dim,'left',10);
+  aText(ctx,'对角线最热(自身)',lx,oy+34,AC.dim,'left',10);
+  aText(ctx,'黑格 = 被 mask 的未来',lx,oy+52,AC.dim,'left',10);
+  aText(ctx,'行扫掠 '+Math.min(N,Math.floor(lt/SW)+1)+' / '+N,lx,oy+84,AC.hi,'left',10);
+},
+
+ropeSpin(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const PER=15,DP=3,T=6.4,lt=t%T;
+  const p=Math.min(12,lt/(T-1.6)*12);
+  const kp=Math.max(0,p-DP);
+  const cx=130,cy=H/2+16,R=82;
+  aText(ctx,'RoPE · 旋转位置编码',14,22,AC.hi);
+  aText(ctx,'Q/K 随位置索引旋转 · 转角 ∝ 位置',14,38,AC.dim,'left',10);
+  ctx.strokeStyle='rgba(255,176,0,.25)';
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+  for(let a=0;a<360;a+=15){
+    const rad=a*Math.PI/180,r1=R-(a%45?4:8);
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(rad)*r1,cy+Math.sin(rad)*r1);
+    ctx.lineTo(cx+Math.cos(rad)*R,cy+Math.sin(rad)*R);
+    ctx.stroke();
+  }
+  aVec(ctx,cx,cy,R-14,-p*PER*Math.PI/180,AC.amber);
+  aVec(ctx,cx,cy,R-34,-kp*PER*Math.PI/180,AC.gold);
+  ctx.fillStyle=AC.hi;ctx.beginPath();ctx.arc(cx,cy,3,0,7);ctx.fill();
+  aText(ctx,'Q · pos '+p.toFixed(0),cx+R+12,cy-6,AC.amber);
+  aText(ctx,'K · pos '+kp.toFixed(0),cx+R+12,cy+12,AC.gold);
+  const rx=cx+R+118;
+  aText(ctx,'θ / pos = '+PER+'°',rx,cy-48,AC.dim,'left',10);
+  aText(ctx,'Q 转角 = '+(p*PER).toFixed(0)+'°',rx,cy-28,AC.amber);
+  aText(ctx,'K 转角 = '+(kp*PER).toFixed(0)+'°',rx,cy-8,AC.gold);
+  aText(ctx,'Δ转角 = '+(DP*PER)+'° ⇔ 相对位置 '+DP,rx,cy+16,AC.hi);
+  aText(ctx,'QKᵀ 只感知相对距离 · Δ恒定',rx,cy+36,AC.dim,'left',10);
+},
+
+pagedMem(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const SEQ=['#ffb000','#3ddc68','#ff8a3d'];
+  const EV=[0,1,2,0,1,0,2,1,0,2,0,1];
+  const PHYS=[5,1,9,3,12,7,0,14,6,11,2,13];
+  const STEP=.45,T=EV.length*STEP+1.5,lt=t%T;
+  const n=Math.min(EV.length,Math.floor(lt/STEP));
+  aText(ctx,'逻辑序列 → 物理 block(16 tok/块)· 页表映射 · 非连续落块',14,20,AC.hi);
+  const cnt=[0,0,0],arrows=[];
+  EV.forEach((s,e)=>arrows.push({s,bi:cnt[s]++,ph:PHYS[e],on:e<n,fresh:e===n-1}));
+  for(let s=0;s<3;s++){
+    aText(ctx,'SEQ '+(s+1),14,60+s*52,SEQ[s],'left',10);
+    for(let b=0;b<5;b++){
+      ctx.strokeStyle='rgba(255,176,0,.25)';ctx.strokeRect(60.5+b*38,45.5+s*52,30,20);
+    }
+  }
+  arrows.forEach(a=>{
+    if(!a.on)return;
+    const x=60+a.bi*38,y=45+a.s*52;
+    ctx.globalAlpha=.3;ctx.fillStyle=SEQ[a.s];ctx.fillRect(x+1,y+1,29,19);ctx.globalAlpha=1;
+    aText(ctx,'L'+a.bi,x+15,y+14,SEQ[a.s],'center',9);
+  });
+  const gx=W-252,gy=46,bw=52,bh=32,gap=8;
+  aText(ctx,'物理显存 · 16 block',gx,gy-8,AC.dim,'left',10);
+  const phXY=i=>({x:gx+(i%4)*(bw+gap),y:gy+Math.floor(i/4)*(bh+gap)});
+  for(let i=0;i<16;i++){
+    const p=phXY(i);
+    ctx.strokeStyle='rgba(255,176,0,.2)';ctx.strokeRect(p.x+.5,p.y+.5,bw,bh);
+  }
+  arrows.forEach(a=>{
+    if(!a.on)return;
+    const p=phXY(a.ph),col=SEQ[a.s];
+    ctx.globalAlpha=.3;ctx.fillStyle=col;ctx.fillRect(p.x+1,p.y+1,bw-1,bh-1);ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.strokeRect(p.x+.5,p.y+.5,bw,bh);
+    aText(ctx,'S'+(a.s+1),p.x+bw/2,p.y+bh/2+4,col,'center',10);
+    const x1=60+a.bi*38+30,y1=45+a.s*52+10;
+    ctx.strokeStyle=col;ctx.globalAlpha=a.fresh?.9:.22;ctx.lineWidth=a.fresh?2:1;
+    ctx.beginPath();ctx.moveTo(x1,y1);
+    ctx.bezierCurveTo(x1+46,y1,p.x-46,p.y+bh/2,p.x,p.y+bh/2);
+    ctx.stroke();ctx.globalAlpha=1;ctx.lineWidth=1;
+  });
+  const by=226;
+  aText(ctx,'传统预留',14,by+10,AC.dim,'left',10);
+  ctx.strokeStyle='rgba(255,176,0,.3)';ctx.strokeRect(70.5,by+.5,180,12);
+  ctx.fillStyle='rgba(255,176,0,.35)';ctx.fillRect(71,by+1,72,11);
+  aHatch(ctx,143,by+1,107,11,'rgba(217,32,32,.5)');
+  aText(ctx,'浪费 ~60%',258,by+10,AC.red,'left',10);
+  aText(ctx,'Paged',14,by+30,AC.dim,'left',10);
+  ctx.strokeStyle='rgba(255,176,0,.3)';ctx.strokeRect(70.5,by+20.5,180,12);
+  ctx.fillStyle='rgba(255,176,0,.55)';ctx.fillRect(71,by+21,176,11);
+  aText(ctx,'浪费 <5%',258,by+30,AC.green,'left',10);
+},
+
+batchFlow(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const T=8,lt=t%T;
+  const ax=70,aw=W-96,AS=6,X=s=>ax+s/AS*aw;
+  const W2=[3,5,4,2.5,4.5],NL=5,lh=12,lg=4;
+  const cursor=Math.min(AS,lt/3.2*AS);
+  const emph=lt<T/2?0:1;
+  const ARR=[0,.6,1.1,1.7,2.2],D1=[3,5,4,2.5,4.5],D2=[2.2,1.4,1.8,3.0,1.2],D3=[1.8,0,1.2,0,0];
+  const segs=i=>{
+    const out=[];let s=ARR[i];
+    [[D1[i],.55],[D2[i],.3],[D3[i],.55]].forEach(([d,a])=>{if(d>0){out.push({s,e:s+d,a});s+=d;}});
+    return out;
+  };
+  const sy=28;
+  aText(ctx,'STATIC · 整批等最长',ax,sy-8,emph===0?AC.hi:AC.dim,'left',10);
+  if(emph===0){ctx.strokeStyle=AC.accent;ctx.strokeRect(ax-50.5,sy-18.5,aw+60,NL*(lh+lg)+24);}
+  for(let i=0;i<NL;i++){
+    const y=sy+i*(lh+lg);
+    aText(ctx,'r'+i,ax-26,y+10,AC.dim,'left',9);
+    ctx.strokeStyle='rgba(255,176,0,.15)';ctx.strokeRect(ax+.5,y+.5,aw,lh);
+    const wEnd=Math.min(cursor,W2[i]);
+    if(wEnd>0){ctx.fillStyle='rgba(255,176,0,.55)';ctx.fillRect(ax,y,X(wEnd)-ax,lh);}
+    if(cursor>W2[i])aHatch(ctx,X(W2[i]),y,Math.min(X(5),X(cursor))-X(W2[i]),lh,'rgba(143,127,87,.5)');
+  }
+  aText(ctx,'斜纹 = 空转',X(5)+8,sy+2*(lh+lg)+10,AC.dim,'left',9);
+  const cy0=sy+NL*(lh+lg)+34;
+  aText(ctx,'CONTINUOUS · 完成即插入新请求',ax,cy0-8,emph===1?AC.hi:AC.dim,'left',10);
+  if(emph===1){ctx.strokeStyle=AC.accent;ctx.strokeRect(ax-50.5,cy0-18.5,aw+60,NL*(lh+lg)+24);}
+  for(let i=0;i<NL;i++){
+    const y=cy0+i*(lh+lg);
+    aText(ctx,'r'+i,ax-26,y+10,AC.dim,'left',9);
+    ctx.strokeStyle='rgba(255,176,0,.15)';ctx.strokeRect(ax+.5,y+.5,aw,lh);
+    if(cursor<ARR[i])aHatch(ctx,ax,y,Math.min(X(ARR[i]),ax+aw)-ax,lh,'rgba(143,127,87,.25)');
+    segs(i).forEach(g=>{
+      const e=Math.min(g.e,cursor);
+      if(e>g.s){ctx.fillStyle='rgba(255,176,0,'+g.a+')';ctx.fillRect(X(g.s),y,X(e)-X(g.s),lh);}
+    });
+  }
+  const uy=cy0+NL*(lh+lg)+18,uh=H-uy-12;
+  if(uh>20){
+    aText(ctx,'GPU 利用率',ax-56,uy+12,AC.dim,'left',9);
+    ctx.strokeStyle='rgba(255,176,0,.15)';ctx.strokeRect(ax+.5,uy+.5,aw,uh);
+    const utilS=s=>W2.filter(w=>w>s).length/NL;
+    const utilC=s=>{let c=0;for(let i=0;i<NL;i++)if(segs(i).some(g=>s>=g.s&&s<g.e))c++;return c/NL;};
+    const plot=(fn,color,dash)=>{
+      ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.setLineDash(dash||[]);
+      ctx.beginPath();
+      const xMax=X(cursor)-ax;
+      for(let x=0;x<=xMax;x+=3){
+        const v=fn(x/aw*AS),y=uy+uh-3-v*(uh-8);
+        x===0?ctx.moveTo(ax+x,y):ctx.lineTo(ax+x,y);
+      }
+      ctx.stroke();ctx.setLineDash([]);ctx.lineWidth=1;
+    };
+    plot(utilS,'rgba(143,127,87,.9)',[4,3]);
+    plot(utilC,AC.amber);
+    aText(ctx,'— continuous',ax+aw-128,uy+11,AC.amber,'left',9);
+    aText(ctx,'- - static',ax+aw-128,uy+21,AC.dim,'left',9);
+  }
+},
+
+draftVerify(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const G=4,RD=2.2,ROUNDS=3,T=ROUNDS*RD+1,lt=t%T;
+  const r=Math.min(ROUNDS-1,Math.floor(lt/RD)),ph=lt-r*RD;
+  const K=q=>1+Math.floor(srnd(q*13+5)*4);
+  const cw=32,gap=3,x0=12,y0=116,ch=26;
+  let base=0;const committed=[];
+  for(let q=0;q<r;q++){
+    const k=K(q);
+    for(let i=0;i<k;i++)committed.push({tok:'T'+(base+i),ok:1});
+    committed.push({tok:'T'+(base+k)+"'",ok:2,bonus:k===G});
+    base+=k+1;
+  }
+  const k=K(r);
+  const phase=ph<.72?'① 小模型 draft ×'+G+'(7B · 快)':ph<1.65?'② 大模型一次 verify(70B)':'③ 本轮接受 '+k+' / '+G;
+  aText(ctx,phase,14,22,AC.hi);
+  aText(ctx,'已提交 '+committed.length+' tok · round '+(r+1)+' / '+ROUNDS,14,38,AC.dim,'left',10);
+  const cell=(pos,draw)=>{
+    const x=x0+pos*(cw+gap);
+    if(x+cw>W-10)return;
+    draw(x);
+  };
+  committed.forEach((c,i)=>cell(i,x=>{
+    if(c.ok===1){
+      ctx.fillStyle='rgba(255,176,0,.2)';ctx.fillRect(x,y0,cw,ch);
+      ctx.strokeStyle='rgba(255,176,0,.6)';ctx.strokeRect(x+.5,y0+.5,cw,ch);
+      aText(ctx,c.tok,x+cw/2,y0+17,AC.amber,'center',10);
+    }else{
+      ctx.fillStyle='rgba(255,77,0,.12)';ctx.fillRect(x,y0,cw,ch);
+      ctx.strokeStyle=c.bonus?AC.green:AC.accent;ctx.strokeRect(x+.5,y0+.5,cw,ch);
+      aText(ctx,c.tok,x+cw/2,y0+17,c.bonus?AC.green:AC.accent,'center',10);
+    }
+  }));
+  for(let i=0;i<G;i++)cell(base+i,x=>{
+    const appear=Math.max(0,Math.min(1,(ph-i*.18)/.15));
+    if(ph>1.65){
+      if(i<k){
+        ctx.fillStyle='rgba(61,220,104,.2)';ctx.fillRect(x,y0,cw,ch);
+        ctx.strokeStyle=AC.green;ctx.strokeRect(x+.5,y0+.5,cw,ch);
+        aText(ctx,'✓',x+cw/2,y0+17,AC.green,'center',10);
+      }else if(i===k){
+        ctx.strokeStyle=AC.red;ctx.strokeRect(x+.5,y0+.5,cw,ch);
+        aText(ctx,'✕',x+cw/2,y0+17,AC.red,'center',10);
+        ctx.strokeStyle='rgba(255,92,92,.5)';
+        ctx.beginPath();ctx.moveTo(x+cw/2,y0+ch);ctx.lineTo(x+cw/2,y0+ch+10);ctx.stroke();
+        ctx.fillStyle='rgba(255,77,0,.15)';ctx.fillRect(x-2,y0+ch+10,cw+4,ch-4);
+        ctx.strokeStyle=AC.accent;ctx.strokeRect(x-1.5,y0+ch+10.5,cw+3,ch-3);
+        aText(ctx,'T'+(base+i)+"'",x+cw/2,y0+ch+25,AC.accent,'center',10);
+      }else{
+        ctx.globalAlpha=.15;
+        ctx.setLineDash([3,3]);ctx.strokeStyle=AC.dim;ctx.strokeRect(x+.5,y0+.5,cw,ch);
+        ctx.setLineDash([]);ctx.globalAlpha=1;
+      }
+    }else if(appear>0){
+      ctx.globalAlpha=appear*.6;
+      ctx.setLineDash([3,3]);ctx.strokeStyle=AC.amber;ctx.strokeRect(x+.5,y0+.5,cw,ch);
+      ctx.setLineDash([]);
+      aText(ctx,'d'+i,x+cw/2,y0+17,AC.dim,'center',10);
+      ctx.globalAlpha=1;
+    }
+  });
+  if(ph>.95&&ph<=1.65){
+    const sx=x0+base*(cw+gap)+(ph-.95)/.7*(G*(cw+gap)-gap)-2;
+    ctx.strokeStyle=AC.accent;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(sx,y0-16);ctx.lineTo(sx,y0+ch+8);ctx.stroke();ctx.lineWidth=1;
+    aText(ctx,'verify',Math.min(sx,W-46),y0-22,AC.accent,'left',9);
+  }
+  aText(ctx,'虚影 = draft 候选 · ✓ 接受 · ✕ 拒绝并替换',14,H-16,AC.dim,'left',10);
+},
+
+quantBits(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const ST=[{n:'FP16',b:16,gb:140},{n:'INT8',b:8,gb:70},{n:'INT4',b:4,gb:35}];
+  const SD=2.0,T=ST.length*SD+1.3,lt=t%T;
+  const cur=Math.min(2,Math.floor(lt/SD));
+  aText(ctx,'70B 权重 · bit/param 减半 → 显存减半',14,22,AC.hi);
+  ST.forEach((s,i)=>{
+    const y=48+i*52,act=i<=cur;
+    aText(ctx,s.n,14,y+17,act?AC.amber:AC.dim);
+    for(let b=0;b<16;b++){
+      const x=84+b*15;
+      ctx.strokeStyle='rgba(255,176,0,.18)';ctx.strokeRect(x+.5,y+.5,13,22);
+      if(act&&b<s.b){
+        const ap=i<cur?1:Math.max(0,Math.min(1,(lt-i*SD-b*.03)/.2));
+        ctx.globalAlpha=ap;
+        ctx.fillStyle='rgba(255,176,0,.5)';ctx.fillRect(x+1,y+1,12,21);
+        ctx.globalAlpha=1;
+      }
+    }
+    aText(ctx,s.b+' bit',84+16*15+8,y+17,act?AC.hi:AC.dim,'left',10);
+    if(i<2)aText(ctx,'↓ ÷2',20,y+40,AC.accent,'left',10);
+  });
+  const rx=W-180;
+  const from=cur===0?140:ST[cur-1].gb,to=ST[cur].gb;
+  const f=Math.min(1,(lt-cur*SD)/.5),e=1-Math.pow(1-f,3);
+  aText(ctx,'权重显存',rx,58,AC.dim,'left',10);
+  aText(ctx,(from+(to-from)*e).toFixed(0)+' GB',rx,92,AC.hi,'left',26);
+  ST.forEach((s,i)=>aText(ctx,s.n+' → '+s.gb+' GB',rx,124+i*18,i<=cur?AC.amber:AC.dim,'left',10));
+  aText(ctx,'量化有精度损失 · 校准见 GPTQ/AWQ',14,H-14,AC.dim,'left',10);
+},
+
+tempMorph(ctx,W,H,t){
+  aGrid(ctx,W,H);
+  const LG=[2.0,1.2,0.5,0.1,-0.4];
+  const T=6.4,lt=t%T;
+  const tri=1-Math.abs(1-2*lt/T);
+  const tmp=0.2+1.8*tri;
+  const ex=LG.map(l=>Math.exp(l/tmp)),sum=ex.reduce((a,b)=>a+b,0);
+  const ps=ex.map(e2=>e2/sum);
+  const order=[0,1,2,3,4].sort((a,b)=>ps[b]-ps[a]);
+  let cum=0,cut=5;
+  for(let i=0;i<5;i++){cum+=ps[order[i]];if(cum>=0.9){cut=i+1;break;}}
+  aText(ctx,'T = '+tmp.toFixed(2),14,24,AC.hi,'left',15);
+  aText(ctx,'top-p = 0.90 · 虚线右侧被截断',14,40,AC.dim,'left',10);
+  aText(ctx,tmp<0.5?'低温 · 分布尖锐':tmp>1.4?'高温 · 分布摊平':'中温',120,24,AC.dim,'left',10);
+  const bw=52,gap=18,x0=40,base=H-52,maxh=160,bwTotal=5*(bw+gap)-gap;
+  order.forEach((oi,rank)=>{
+    const x=x0+rank*(bw+gap),h=Math.max(2,ps[oi]*maxh),inc=rank<cut;
+    ctx.fillStyle=inc?'rgba(255,176,0,'+Math.min(.95,.25+ps[oi]*1.6).toFixed(2)+')':'rgba(255,176,0,.08)';
+    ctx.fillRect(x,base-h,bw,h);
+    ctx.strokeStyle=inc?'rgba(255,176,0,.5)':'rgba(255,176,0,.15)';
+    ctx.strokeRect(x+.5,base-h+.5,bw,h);
+    aText(ctx,(ps[oi]*100).toFixed(1)+'%',x+bw/2,base-h-6,inc?AC.hi:AC.dim,'center',10);
+    aText(ctx,'c'+oi,x+bw/2,base+14,AC.dim,'center',9);
+  });
+  const lx=x0+cut*(bw+gap)-gap/2;
+  ctx.strokeStyle=AC.accent;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(lx,48);ctx.lineTo(lx,base);ctx.stroke();ctx.setLineDash([]);
+  aText(ctx,'截断线',lx,44,AC.accent,'center',9);
+  const sy=H-16;
+  ctx.strokeStyle='rgba(255,176,0,.3)';
+  ctx.beginPath();ctx.moveTo(x0,sy);ctx.lineTo(x0+bwTotal,sy);ctx.stroke();
+  [0.2,1.0,2.0].forEach(v=>aText(ctx,v.toFixed(1),x0+(v-0.2)/1.8*bwTotal,sy+13,AC.dim,'center',9));
+  ctx.fillStyle=AC.amber;ctx.fillRect(x0+(tmp-0.2)/1.8*bwTotal-2,sy-4,4,8);
+}
+
+};
+
+function dgmBlock(d){
+  if(d.anim && ANIM[d.anim]){
+    return '<div class="dgm"><div class="dgm-title">◇ '+esc(d.title)+'</div><div class="dgm-anim" data-anim="'+d.anim+'"></div></div>';
+  }
+  return dgmHtml(d);
+}
+
+function mountAnim(){
+  const host=cardBody.querySelector('.dgm-anim');
+  if(!host)return;
+  const fn=ANIM[host.dataset.anim];
+  const canvas=document.createElement('canvas');
+  host.appendChild(canvas);
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const W=host.clientWidth||560,H=280;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width='100%';canvas.style.height=H+'px';canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const t0=performance.now();
+  const handle={id:0};
+  dgmRAF.push(handle);
+  const tick=now=>{
+    fn(ctx,W,H,Math.max(0,(now-t0)/1000));
+    handle.id=requestAnimationFrame(tick);
+  };
+  handle.id=requestAnimationFrame(tick);
+}
+
+function dgmHtml(d){
+  let inner='';
+  if(d.type==='flow'){
+    const n=d.items.length;
+    inner='<div class="dgm-flow">'+d.items.map((it,i)=>
+      (i>0?'<div class="dgm-arrow" style="animation:dgmFadeIn .3s '+(i*500)+'ms both">▶</div>':'')+
+      '<div class="dgm-node" style="animation:dgmFadeIn .3s '+(i*500)+'ms both"><b>'+esc(it[0])+'</b><span>'+esc(it[1])+'</span></div>'
+    ).join('')+'<span class="dgm-sig" style="animation:dgmSigRun '+(n*500)+'ms linear infinite"></span></div>';
+  }else if(d.type==='loop'){
+    const n=d.items.length, T=n*900, R=95;
+    inner='<div class="dgm-loop"><div class="dgm-loop-ring"></div>'+
+      '<div class="dgm-loop-orbit" style="animation-duration:'+T+'ms"><span class="dgm-loop-dot"></span></div>'+
+      d.items.map((it,i)=>{
+        const a=(-90+i*360/n)*Math.PI/180;
+        const x=Math.cos(a)*R, y=Math.sin(a)*R;
+        return '<div class="dgm-loop-node" style="left:calc(50% + '+x.toFixed(1)+'px);top:calc(50% + '+y.toFixed(1)+'px);'+
+          'animation-duration:'+T+'ms;animation-delay:'+(i*T/n).toFixed(0)+'ms"><b>'+esc(it[0])+'</b><span>'+esc(it[1])+'</span></div>';
+      }).join('')+'</div>';
+  }else if(d.type==='bars'){
+    const nums = d.items.map(it=>{
+      const m = String(it[1]).match(/[\d.]+/g);
+      return m ? Math.max.apply(null,m.map(Number)) : 0;
+    });
+    const mx = Math.max.apply(null,nums.concat([1]));
+    inner=d.items.map((it,i)=>{
+      const pct = nums[i]>0 ? Math.max(6, nums[i]/mx*100) : 6;
+      return '<div class="dgm-bar-row"><span class="dgm-bar-label">'+esc(it[0])+'</span>'+
+        '<div class="dgm-bar-track"><div class="dgm-bar-fill" style="width:'+pct+'%;animation:dgmBarGrow .8s cubic-bezier(.25,.7,.3,1) both"></div></div>'+
+        '<span class="dgm-bar-val">'+esc(it[1])+'</span></div>';
+    }).join('');
+  }else if(d.type==='compare'){
+    inner=d.items.map((it,i)=>'<div class="dgm-cmp-row" style="animation:'+(i%2?'dgmWipeR':'dgmWipeL')+' .35s '+(i*180)+'ms both"><b>'+esc(it[0])+'</b><span>'+esc(it[1])+'</span></div>').join('');
+  }else if(d.type==='tree'){
+    inner=d.items.map((it,i)=>{
+      const guide = i===0?'':'<span class="guide">'+(i===d.items.length-1?'└─ ':'├─ ')+'</span>';
+      const pad = i===0?0:12;
+      return '<div class="dgm-tree-row" style="padding-left:'+pad+'px;animation:dgmFadeIn .3s '+(i*250)+'ms both">'+guide+'<b>'+esc(it[0])+'</b> · '+esc(it[1])+'</div>';
+    }).join('');
+  }
+  return '<div class="dgm"><div class="dgm-title">◇ '+esc(d.title)+'</div>'+inner+'</div>';
+}
+
+let dgmRAF=[];
+function cancelDgm(){ dgmRAF.forEach(h=>cancelAnimationFrame(h&&h.id!==undefined?h.id:h)); dgmRAF=[]; }
+function dgmCountUp(){
+  cancelDgm();
+  cardBody.querySelectorAll('.dgm-bar-val').forEach(el=>{
+    const m = el.textContent.match(/^([^\d]*)([\d.]+)([\s\S]*)$/);
+    if(!m) return;
+    const target=parseFloat(m[2]), dec=(m[2].split('.')[1]||'').length, t0=performance.now();
+    const tick=t=>{
+      const k=Math.min(1,(t-t0)/800), e=1-Math.pow(1-k,3);
+      el.textContent=m[1]+(target*e).toFixed(dec)+m[3];
+      if(k<1) dgmRAF.push(requestAnimationFrame(tick));
+    };
+    dgmRAF.push(requestAnimationFrame(tick));
+  });
+}
+
+function resHtml(r){
+  let h='';
+  if(r.youtube && r.youtube.length){
+    h+='<div class="res-kind">YOUTUBE</div>';
+    r.youtube.forEach(v=>{
+      h+='<a class="res-link" href="'+esc(v.url)+'" target="_blank" rel="noopener">▸ '+esc(v.title)+'</a>'+
+         '<div class="res-meta"><b>'+esc(v.channel)+'</b> · '+esc(v.why)+'</div>';
+    });
+  }
+  if(r.bilibili && r.bilibili.length){
+    h+='<div class="res-kind">BILIBILI</div>';
+    r.bilibili.forEach(v=>{
+      h+='<a class="res-link" href="'+esc(v.url)+'" target="_blank" rel="noopener">▸ '+esc(v.title)+'</a>'+
+         '<div class="res-meta"><b>UP '+esc(v.up)+'</b> · '+esc(v.why)+'</div>';
+    });
+  }
+  if(r.keywords && r.keywords.length){
+    h+='<div class="res-kind">抖音 / 小红书 · 搜索直达</div><div class="kw-row">';
+    r.keywords.forEach(kw=>{
+      const e = encodeURIComponent(kw);
+      h+='<a class="kw-chip" href="https://www.douyin.com/search/'+e+'" target="_blank" rel="noopener">抖音 · '+esc(kw)+'<i>搜索直达</i></a>';
+      h+='<a class="kw-chip" href="https://www.xiaohongshu.com/search_result?keyword='+e+'" target="_blank" rel="noopener">小红书 · '+esc(kw)+'<i>搜索直达</i></a>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+const cardBody = document.getElementById('cardBody');
+const cardCh = document.getElementById('cardCh');
+
+function selectNode(id){
+  cancelDgm();
+  const st = nodeStatus(id);
+  const n = NODES[id];
+  if(st==='locked'){
+    selected=null;
+    cardCh.textContent='CH '+n.code+' · 信号锁定';
+    cardBody.innerHTML='<div class="screen" style="min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">'+
+      '<span style="color:#ff5c5c;font-size:13px;letter-spacing:.15em;font-weight:600">-- SIGNAL LOCKED --</span>'+
+      '<span class="card-empty" style="min-height:0">请先完成上游模块的校准测验</span></div>';
+    renderMatrix();
+    return;
+  }
+  selected=id;
+  cardCh.textContent='CH '+n.code+' · '+n.en;
+  renderCard(id);
+  renderMatrix();
+}
+
+function renderCard(id){
+  const n = NODES[id], s = n.sections, done = state[id]==='done';
+  const paras = s.principle.split('\n').map(p=>'<div class="scr-row" style="margin-bottom:5px">'+esc(p)+'</div>').join('');
+  const formula = s.formula.map(esc).join('\n');
+  const example = s.example.map(l=>'<div class="scr-row">'+esc(l)+'</div>').join('');
+  const trades = s.tradeoffs.map(t=>'<div class="scr-row"><span class="scr-dim">▪</span> '+esc(t)+'</div>').join('');
+  const pits = s.pitfalls.map(t=>'<div class="scr-row"><span style="color:#ff8a5c">✕</span> '+esc(t)+'</div>').join('');
+  cardBody.innerHTML =
+    '<div class="screen card-scroll">'+
+      '<div class="scr-title">'+n.code+' · '+esc(n.name)+' <span style="color:var(--accent)">/</span> <span style="font-size:12px;color:#8f7f57">'+esc(n.en)+' · '+BR[n.branch]+'</span></div>'+
+      '<div class="scr-sub">'+esc(n.summary)+'</div>'+
+      '<div class="card-grid">'+
+        '<div>'+
+          '<div class="sec"><div class="sec-t" data-n="01">原理</div>'+paras+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="02">公式推导</div><div class="scr-formula">'+formula+'</div></div>'+
+          '<div class="sec"><div class="sec-t" data-n="03">数字算例</div>'+example+'</div>'+
+        '</div>'+
+        '<div>'+
+          dgmBlock(n.diagram)+
+          '<div class="sec"><div class="sec-t" data-n="04">工程权衡</div>'+trades+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="05">常见误区</div>'+pits+'</div>'+
+          '<div class="sec"><div class="sec-t" data-n="06">学习资源</div><div class="res-block">'+resHtml(n.resources)+'</div></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="quiz">'+
+      '<div class="quiz-q"><span class="qtag">CAL</span>'+esc(n.quiz.q)+'</div>'+
+      '<div id="quizOpts">'+n.quiz.options.map((o,i)=>'<div class="quiz-opt" data-i="'+i+'"><span class="key">'+'ABCD'[i]+'</span><span>'+esc(o)+'</span></div>').join('')+'</div>'+
+      '<div class="quiz-foot">'+
+        '<button class="btn" id="btnCheck" disabled>'+(done?'已通过':'校验')+'</button>'+
+        '<span class="quiz-result '+(done?'ok':'')+'" id="quizRes">'+(done?'CAL OK · 下游已解锁':'')+'</span>'+
+      '</div>'+
+      '<div class="quiz-explain'+(done?' show':'')+'" id="quizExp">'+esc(n.quiz.explain)+'</div>'+
+    '</div>';
+  dgmCountUp();
+  mountAnim();
+  let sel=-1;
+  cardBody.querySelectorAll('.quiz-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(state[id]==='done') return;
+      cardBody.querySelectorAll('.quiz-opt').forEach(e=>e.classList.remove('sel'));
+      el.classList.add('sel');
+      sel=+el.dataset.i;
+      document.getElementById('btnCheck').disabled=false;
+    });
+  });
+  document.getElementById('btnCheck').addEventListener('click',()=>{
+    if(state[id]==='done' || sel<0) return;
+    const res = document.getElementById('quizRes');
+    if(sel === n.quiz.answer){
+      state[id]='done';
+      saveProgress();
+      res.textContent='CAL OK · 下游已解锁';
+      res.className='quiz-result ok';
+      document.getElementById('btnCheck').textContent='已通过';
+      document.getElementById('btnCheck').disabled=true;
+      document.getElementById('quizExp').className='quiz-explain show';
+      renderMatrix();
+    }else{
+      res.textContent='CAL FAIL · 再读一遍卡片';
+      res.className='quiz-result ng';
+      const err=document.getElementById('ledErr');
+      err.className='led on-r';
+      setTimeout(()=>err.className='led',900);
+    }
+  });
+}
+function bindSeg(id, cb){
+  const seg = document.getElementById(id);
+  seg.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      cb(b.dataset.v);
+    });
+  });
+}
+function drawMem(pfx, cap, segs, total, oom){
+  const scale = Math.max(cap, total);
+  const pct = v => (v/scale*100)+'%';
+  document.getElementById('segW'+pfx).style.width = pct(segs.w);
+  document.getElementById('segK'+pfx).style.width = pct(segs.k);
+  document.getElementById('segA'+pfx).style.width = pct(segs.a);
+  const f = document.getElementById('segF'+pfx);
+  if(f) f.style.width = pct(segs.f||0);
+  const x = document.getElementById('segX'+pfx);
+  if(x){
+    if(oom){ x.style.display='block'; x.style.width=((total-cap)/scale*100)+'%'; }
+    else x.style.display='none';
+  }
+  const mp = document.getElementById('memPct'+pfx);
+  mp.textContent = fmt(total)+' GB / '+cap+' GB'+(oom?' · OOM':'');
+  mp.className = 'mem-pct'+(oom?' oom':'');
+}
+const cleared = {1:false,2:false,3:false};
+function markClear(ch, pass){
+  if(pass && !cleared[ch]){
+    cleared[ch]=true;
+    saveProgress();
+    document.getElementById('stamp'+ch).className='stamp show';
+    document.getElementById('banner'+ch).className='clear-banner show';
+    document.querySelector('.ch-tab[data-ch="'+ch+'"]').classList.add('cleared');
+    document.getElementById('hClear').textContent=((cleared[1]?1:0)+(cleared[2]?1:0)+(cleared[3]?1:0))+' / 3';
+  }
+}
+
+const HW1 = {
+  a100x1:{label:'1×A100 80G', mem:80,  bw:2039, flops:312},
+  a100x2:{label:'2×A100 80G', mem:160, bw:4078, flops:624},
+  h100x1:{label:'1×H100 80G', mem:80,  bw:3350, flops:989},
+};
+const QUANT1 = {
+  fp16:{label:'FP16', w:140, bytes:2},
+  int8:{label:'INT8', w:70,  bytes:1},
+  int4:{label:'INT4', w:35,  bytes:0.5},
+};
+const KV1 = {
+  mha:{label:'MHA ×1',     heads:64},
+  gqa:{label:'GQA ×0.125', heads:8},
+  mla:{label:'MLA 576维',  heads:0},
+};
+const sb1 = {gpu:'a100x1', quant:'fp16', kv:'gqa', batch:8, ctx:4096};
+const PROMPT1 = 2000, ACT1=4, FRAG1=2;
+
+bindSeg('segGpu1', v=>{sb1.gpu=v; calc1();});
+bindSeg('segQuant1', v=>{sb1.quant=v; calc1();});
+bindSeg('segKv1', v=>{sb1.kv=v; calc1();});
+document.getElementById('rBatch1').addEventListener('input',e=>{sb1.batch=+e.target.value; calc1();});
+document.getElementById('rCtx1').addEventListener('input',e=>{sb1.ctx=+e.target.value; calc1();});
+
+function calc1(){
+  const hw=HW1[sb1.gpu], q=QUANT1[sb1.quant], kt=KV1[sb1.kv];
+  const weights=q.w;
+  const kvPerTok = sb1.kv==='mla' ? 2*61*576*2 : 2*80*kt.heads*128*2;
+  const kvGB = kvPerTok*sb1.ctx*sb1.batch/1e9;
+  const total = weights+kvGB+ACT1+FRAG1;
+  const oom = total>hw.mem;
+  const stepBytes = weights*1e9 + kvPerTok*sb1.ctx*sb1.batch;
+  const tpotMs = stepBytes/(hw.bw*1e9)*1000;
+  const tps = sb1.batch/(stepBytes/(hw.bw*1e9))*0.7;
+  const ttft = 2*70e9*PROMPT1/(hw.flops*1e12*0.5)*1000;
+
+  document.getElementById('oGpu1').textContent=hw.label;
+  document.getElementById('oQuant1').textContent=q.label+' · '+q.w+'GB';
+  document.getElementById('oKv1').textContent=kt.label;
+  document.getElementById('oBatch1').textContent=sb1.batch;
+  document.getElementById('oCtx1').textContent=sb1.ctx>=1024?(sb1.ctx/1024)+'K':sb1.ctx;
+
+  drawMem('1', hw.mem, {w:weights,k:kvGB,a:ACT1,f:FRAG1}, total, oom);
+
+  document.getElementById('vTps1').textContent=oom?'--':fmt(tps,0);
+  document.getElementById('vTtft1').textContent=oom?'--':fmt(ttft,0);
+  document.getElementById('vTpot1').textContent=oom?'--':fmt(tpotMs,1);
+  document.getElementById('vMem1').innerHTML=fmt(total)+' <small>/ '+hw.mem+' GB</small>';
+  document.getElementById('roTps1').className='readout '+(!oom&&tps>=150?'good':'bad');
+  document.getElementById('roTtft1').className='readout '+(!oom&&ttft<=2000?'good':'bad');
+  document.getElementById('roTpot1').className='readout '+(oom?'bad':'');
+  document.getElementById('roMem1').className='readout '+(oom?'bad':'good');
+
+  const kvTokKB = kvPerTok/1024;
+  const kvLine = sb1.kv==='mla'
+    ? 'KV/token(MLA) = 2 × 61层 × 576维 × 2B = <b>'+fmt(kvTokKB,1)+' KB</b>'
+    : 'KV/token('+kt.label.split(' ')[0]+') = 2 × 80层 × '+kt.heads+'头 × 128维 × 2B = <b>'+fmt(kvTokKB,1)+' KB</b>';
+  document.getElementById('trace1').innerHTML =
+    '<div class="scr-title">算式追踪 · CH-01 CALC TRACE</div>'+
+    '<div class="scr-row">权重 = 70B × '+q.bytes+'B('+q.label+') = <b>'+fmt(weights,1)+' GB</b></div>'+
+    '<div class="scr-row">'+kvLine+'</div>'+
+    '<div class="scr-row">KV 总 = '+fmt(kvTokKB,1)+'KB × '+sb1.ctx+' ctx × '+sb1.batch+' batch = <b>'+fmt(kvGB)+' GB</b></div>'+
+    '<div class="scr-row">激活缓冲 ≈ '+fmt(ACT1,1)+' GB · 碎片预留 ≈ '+fmt(FRAG1,1)+' GB</div>'+
+    '<div class="scr-row">合计 = <b>'+fmt(total)+' GB</b> / '+hw.mem+' GB '+(oom?'<b style="color:#ff5c5c">→ OOM ✗</b>':'<b style="color:#7be495">→ FIT ✓</b>')+'</div>'+
+    '<div class="scr-row" style="margin-top:4px">decode 步字节 = 权重 '+fmt(weights,1)+' + KV '+fmt(kvGB)+' = '+fmt(stepBytes/1e9)+' GB</div>'+
+    '<div class="scr-row">TPOT = '+fmt(stepBytes/1e9)+'GB ÷ '+hw.bw+'GB/s = <b>'+fmt(tpotMs,1)+' ms</b></div>'+
+    '<div class="scr-row">吞吐 = '+sb1.batch+' × (1 ÷ '+fmt(tpotMs/1000,3)+'s) × 0.7效率 = <b>'+fmt(tps,0)+' tok/s</b></div>'+
+    '<div class="scr-row">TTFT = 2×70e9×'+PROMPT1+' ÷ ('+hw.flops+'TFLOPS × 0.5) = <b>'+fmt(ttft,0)+' ms</b></div>';
+
+  const pass = !oom && tps>=150 && ttft<=2000;
+  const lamp=document.getElementById('slaLamp1');
+  lamp.className='sla-lamp '+(pass?'pass':'fail');
+  document.getElementById('slaTxt1').textContent=oom?'OOM · 显存超限':(pass?'SLA PASS':'SLA FAIL');
+  markClear(1,pass);
+}
+
+const sb2 = {mode:'static', paged:'off', batch:16, qps:4};
+const W2=26, ACT2=4, CAP2=80, BW2=2039;
+const kvTok2 = 2*40*32*128*2;
+const CTX_REAL2=1500, CTX_RSV2=4096;
+
+bindSeg('segMode2', v=>{sb2.mode=v; calc2();});
+bindSeg('segPaged2', v=>{sb2.paged=v; calc2();});
+document.getElementById('rBatch2').addEventListener('input',e=>{sb2.batch=+e.target.value; calc2();});
+document.getElementById('rQps2').addEventListener('input',e=>{sb2.qps=+e.target.value; calc2();});
+
+function calc2(){
+  const avail = CAP2-W2-ACT2;
+  const perSeqRsv = kvTok2*(sb2.paged==='on'?CTX_REAL2:CTX_RSV2)/1e9;
+  const perSeqReal = kvTok2*CTX_REAL2/1e9;
+  const cap = Math.floor(avail/perSeqRsv);
+  const eff = sb2.batch*(sb2.mode==='cont'?0.9:0.4);
+  const conc = Math.max(0, Math.min(cap, eff));
+  const stepGB = W2 + conc*perSeqReal;
+  const tpotMs = stepGB/BW2*1000;
+  const supply = conc>0 ? conc/(tpotMs/1000) : 0;
+  const demand = sb2.qps*200;
+  const kvAlloc = conc*perSeqRsv;
+
+  document.getElementById('oMode2').textContent = sb2.mode==='cont'?'CONTINUOUS ×0.9':'STATIC ×0.4';
+  document.getElementById('oPaged2').textContent = sb2.paged==='on'?'ON · 按1500分配':'OFF · 按4096预留';
+  document.getElementById('oBatch2').textContent = sb2.batch;
+  document.getElementById('oQps2').textContent = sb2.qps+' · '+demand+' tok/s';
+
+  drawMem('2', CAP2, {w:W2,k:kvAlloc,a:ACT2,f:0}, W2+kvAlloc+ACT2, false);
+
+  document.getElementById('vSup2').textContent=fmt(supply,0);
+  document.getElementById('vDem2').textContent=fmt(demand,0);
+  document.getElementById('vTpot2').textContent=fmt(tpotMs,1);
+  document.getElementById('vConc2').innerHTML=fmt(conc,1)+' <small>/ 容量 '+cap+' 序列</small>';
+  document.getElementById('roSup2').className='readout '+(supply>=demand?'good':'bad');
+  document.getElementById('roDem2').className='readout';
+  document.getElementById('roTpot2').className='readout '+(tpotMs<=80?'good':'bad');
+  document.getElementById('roConc2').className='readout '+(cap<eff?'bad':'');
+
+  const warn=document.getElementById('warn2');
+  const warns=[];
+  if(demand>supply) warns.push('排队积压:需求超出供给 '+fmt(demand-supply,0)+' tok/s');
+  if(cap<eff) warns.push('掉载风险:KV 容量 '+cap+' 序列 < 有效 batch '+fmt(eff,1)+',请求被拒');
+  warn.style.display=warns.length?'block':'none';
+  warn.textContent=warns.join(' / ');
+
+  const kvTokKB=kvTok2/1024;
+  document.getElementById('trace2').innerHTML =
+    '<div class="scr-title">算式追踪 · CH-02 CALC TRACE</div>'+
+    '<div class="scr-row">可用 KV 显存 = 80 - 26(权重) - 4(激活) = <b>'+fmt(avail,1)+' GB</b></div>'+
+    '<div class="scr-row">KV/token = 2 × 40层 × 32头 × 128维 × 2B = <b>'+fmt(kvTokKB,0)+' KB</b></div>'+
+    '<div class="scr-row">每序列 KV('+(sb2.paged==='on'?'按实际 1500 分配':'按 4096 全额预留,浪费≈60%')+') = '+fmt(kvTokKB,0)+'KB × '+(sb2.paged==='on'?CTX_REAL2:CTX_RSV2)+' = <b>'+fmt(perSeqRsv,2)+' GB</b></div>'+
+    '<div class="scr-row">并发容量 = '+fmt(avail,1)+' ÷ '+fmt(perSeqRsv,2)+' = <b>'+cap+' 序列</b></div>'+
+    '<div class="scr-row">有效 batch = '+sb2.batch+' × '+(sb2.mode==='cont'?'0.9(continuous)':'0.4(static 等尾空转)')+' = <b>'+fmt(eff,1)+'</b></div>'+
+    '<div class="scr-row">实际并发 = min('+cap+', '+fmt(eff,1)+') = <b>'+fmt(conc,1)+'</b></div>'+
+    '<div class="scr-row" style="margin-top:4px">decode 步字节 = 26 + '+fmt(conc,1)+'×'+fmt(perSeqReal,2)+'(实际KV) = '+fmt(stepGB,1)+' GB</div>'+
+    '<div class="scr-row">TPOT = '+fmt(stepGB,1)+'GB ÷ '+BW2+'GB/s = <b>'+fmt(tpotMs,1)+' ms</b></div>'+
+    '<div class="scr-row">供给 = '+fmt(conc,1)+' ÷ '+fmt(tpotMs/1000,3)+'s = <b>'+fmt(supply,0)+' tok/s</b></div>'+
+    '<div class="scr-row">需求 = '+sb2.qps+' QPS × 200 tok = <b>'+fmt(demand,0)+' tok/s</b> '+(demand>supply?'<b style="color:#ff5c5c">→ 供给不足 ✗</b>':'<b style="color:#7be495">→ 可承载 ✓</b>')+'</div>';
+
+  const pass = supply>=demand && tpotMs<=80;
+  const lamp=document.getElementById('slaLamp2');
+  lamp.className='sla-lamp '+(pass?'pass':'fail');
+  document.getElementById('slaTxt2').textContent=pass?'SLA PASS':(tpotMs>80?'TPOT 超标':'供给不足');
+  markClear(2,pass);
+}
+
+const sb3 = {pc:'off', chunk:'off', hit:60, conc:4};
+const W3=35, ACT3=4, CAP3=80, BW3=3350, FLOPS3=989;
+const kvTok3 = 2*80*8*128*2;
+const PREFIX3=24576, NEW3=8192, FULL3=32768;
+const CHUNK3 = {
+  off:{mfu:0.5,  thr:1.0,  label:'OFF · 整段 prefill'},
+  '8192':{mfu:0.8, thr:0.95, label:'8192 · MFU 0.80'},
+  '2048':{mfu:0.72,thr:0.9,  label:'2048 · MFU 0.72'},
+  '512':{mfu:0.6, thr:0.8,  label:'512 · MFU 0.60'},
+};
+
+bindSeg('segPc3', v=>{sb3.pc=v; calc3();});
+bindSeg('segChunk3', v=>{sb3.chunk=v; calc3();});
+document.getElementById('rHit3').addEventListener('input',e=>{sb3.hit=+e.target.value; calc3();});
+document.getElementById('rConc3').addEventListener('input',e=>{sb3.conc=+e.target.value; calc3();});
+
+function calc3(){
+  const ck = CHUNK3[sb3.chunk];
+  const kvTokGB = kvTok3/1e9;
+  const kvTotal = sb3.pc==='on'
+    ? kvTokGB*(PREFIX3 + sb3.conc*NEW3)
+    : kvTokGB*(sb3.conc*FULL3);
+  const total = W3+kvTotal+ACT3;
+  const oom = total>CAP3;
+  const ttftHit = 2*70e9*NEW3/(FLOPS3*1e12*ck.mfu)*1000;
+  const ttftMiss = 2*70e9*FULL3/(FLOPS3*1e12*ck.mfu)*1000;
+  const hr = sb3.hit/100;
+  const p50 = (sb3.pc==='on' && hr>=0.5) ? ttftHit : ttftMiss;
+  const wavg = sb3.pc==='on' ? hr*ttftHit+(1-hr)*ttftMiss : ttftMiss;
+  const stepGB = W3+kvTotal;
+  const stepMs = stepGB/BW3*1000;
+  const thr = sb3.conc/(stepMs/1000)*ck.thr;
+
+  document.getElementById('oPc3').textContent = sb3.pc==='on'?'ON · 24K 复用':'OFF';
+  document.getElementById('oChunk3').textContent = ck.label;
+  document.getElementById('oHit3').textContent = sb3.hit+'%';
+  document.getElementById('oConc3').textContent = sb3.conc;
+
+  drawMem('3', CAP3, {w:W3,k:kvTotal,a:ACT3,f:0}, total, oom);
+
+  document.getElementById('vP503').textContent=fmt(p50,0);
+  document.getElementById('vWavg3').textContent=fmt(wavg,0);
+  document.getElementById('vThr3').textContent=oom?'--':fmt(thr,0);
+  document.getElementById('vMem3').innerHTML=fmt(total)+' <small>/ '+CAP3+' GB</small>';
+  document.getElementById('roP503').className='readout '+(p50<=1500?'good':'bad');
+  document.getElementById('roWavg3').className='readout';
+  document.getElementById('roThr3').className='readout '+(oom?'bad':'');
+  document.getElementById('roMem3').className='readout '+(oom?'bad':'good');
+
+  const kvTokKB=kvTok3/1024;
+  const kvExpr = sb3.pc==='on'
+    ? fmt(kvTokKB,0)+'KB × (24576共享 + '+sb3.conc+'×8192增量) = <b>'+fmt(kvTotal,1)+' GB</b>'
+    : fmt(kvTokKB,0)+'KB × '+sb3.conc+'并发 × 32768 = <b>'+fmt(kvTotal,1)+' GB</b>';
+  document.getElementById('trace3').innerHTML =
+    '<div class="scr-title">算式追踪 · CH-03 CALC TRACE</div>'+
+    '<div class="scr-row">KV/token(GQA) = 2 × 80层 × 8头 × 128维 × 2B = <b>'+fmt(kvTokKB,0)+' KB</b></div>'+
+    '<div class="scr-row">KV 总('+(sb3.pc==='on'?'Prefix Caching ON':'OFF,全量重算')+') = '+kvExpr+'</div>'+
+    '<div class="scr-row">合计 = 35(权重) + '+fmt(kvTotal,1)+'(KV) + 4(激活) = <b>'+fmt(total,1)+' GB</b> / 80 GB '+(oom?'<b style="color:#ff5c5c">→ OOM ✗</b>':'<b style="color:#7be495">→ FIT ✓</b>')+'</div>'+
+    '<div class="scr-row" style="margin-top:4px">块大小 = '+ck.label.split(' ')[0]+' → prefill MFU = '+ck.mfu+' · 吞吐系数 ×'+ck.thr+'</div>'+
+    '<div class="scr-row">TTFT(命中,算8K) = 2×70e9×8192 ÷ (989TF × '+ck.mfu+') = <b>'+fmt(ttftHit,0)+' ms</b></div>'+
+    '<div class="scr-row">TTFT(未命中,算32K) = 2×70e9×32768 ÷ (989TF × '+ck.mfu+') = <b>'+fmt(ttftMiss,0)+' ms</b> <span class="scr-dim">(差 '+fmt(ttftMiss/ttftHit,1)+' 倍)</span></div>'+
+    '<div class="scr-row">p50 TTFT(命中率 '+sb3.hit+'%'+(sb3.pc!=='on'?',PC 关闭':'')+') = <b>'+fmt(p50,0)+' ms</b> '+(p50<=1500?'<b style="color:#7be495">✓</b>':'<b style="color:#ff5c5c">> 1500 ✗</b>')+'</div>'+
+    '<div class="scr-row">加权 TTFT = '+hr.toFixed(2)+'×'+fmt(ttftHit,0)+' + '+(1-hr).toFixed(2)+'×'+fmt(ttftMiss,0)+' = <b>'+fmt(wavg,0)+' ms</b></div>'+
+    '<div class="scr-row">decode 步 = '+fmt(stepGB,1)+'GB ÷ 3350GB/s = '+fmt(stepMs,1)+'ms → 吞吐 = '+sb3.conc+' ÷ '+fmt(stepMs/1000,3)+'s × '+ck.thr+' = <b>'+fmt(thr,0)+' tok/s</b></div>';
+
+  const pass = !oom && sb3.conc>=4 && p50<=1500;
+  const lamp=document.getElementById('slaLamp3');
+  lamp.className='sla-lamp '+(pass?'pass':'fail');
+  document.getElementById('slaTxt3').textContent=oom?'OOM · 显存超限':(pass?'SLA PASS':(sb3.conc<4?'并发不足':'p50 超标'));
+  markClear(3,pass);
+}
+
+document.getElementById('chTabs').querySelectorAll('.ch-tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.ch-tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.sb-panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('sb'+b.dataset.ch).classList.add('on');
+  });
+});
+
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('clock').textContent=
+    [d.getHours(),d.getMinutes(),d.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
+},1000);
+
+document.getElementById('btnReset').addEventListener('click', resetProgress);
+loadProgress();
+renderMatrix();
+selectNode('autoregressive');
+calc1(); calc2(); calc3();
+</script>
+</body>
+</html>
