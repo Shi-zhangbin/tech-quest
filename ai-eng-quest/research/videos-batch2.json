@@ -1,0 +1,227 @@
+[
+  {
+    "id": "phase07-transformers",
+    "youtube": [
+      {
+        "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+        "channel": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+        "why": "用可视化逐层拆解自注意力机制，是理解 Transformer 最直观的入门视频"
+      },
+      {
+        "title": "Attention Is All You Need",
+        "channel": "Yannic Kilcher",
+        "url": "https://www.youtube.com/watch?v=iDulhoQ2pro",
+        "why": "逐段精读 Transformer 原始论文，理解架构设计动机"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "Transformer论文逐段精读【论文精读】",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1pu411o7BE",
+        "why": "李沐逐段精读原论文并联系代码实现，B站180万+播放的经典"
+      },
+      {
+        "title": "台大李宏毅21年机器学习课程 self-attention和transformer",
+        "up": "爱学习的凉饭爷",
+        "url": "https://www.bilibili.com/video/BV1Xp4y1b7ih",
+        "why": "李宏毅用生活化类比讲透 self-attention 的计算过程，适合零基础"
+      }
+    ],
+    "keywords": ["transformer原理讲解", "自注意力机制动画演示", "手搓transformer"],
+    "note": ""
+  },
+  {
+    "id": "phase08-genai",
+    "youtube": [
+      {
+        "title": "What are Diffusion Models?",
+        "channel": "Ari Seff",
+        "url": "https://www.youtube.com/watch?v=fbLgFrlTnGU",
+        "why": "从数学直觉讲清扩散模型的前向加噪与反向去噪，配图优秀"
+      },
+      {
+        "title": "Variational Autoencoders",
+        "channel": "Arxiv Insights",
+        "url": "https://www.youtube.com/watch?v=9zKuYvjFFS8",
+        "why": "系统讲解 VAE 的重参数化技巧与潜空间结构"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "扩散模型 - Diffusion Model【李宏毅2023】",
+        "up": "想不出来昵称又想改",
+        "url": "https://www.bilibili.com/video/BV14c411J7f2",
+        "why": "李宏毅2023年扩散模型专题课，33万+播放，原理讲得最透的中文课"
+      },
+      {
+        "title": "李宏毅对抗生成网络(GAN)国语教程(2018)",
+        "up": "爱可可-爱生活",
+        "url": "https://www.bilibili.com/video/BV1Up411R7Lk",
+        "why": "GAN 经典国语教程，覆盖生成器/判别器博弈思想与各变体"
+      }
+    ],
+    "keywords": ["扩散模型原理", "AI绘画原理 stable diffusion", "GAN生成对抗网络入门"],
+    "note": ""
+  },
+  {
+    "id": "phase09-rl",
+    "youtube": [
+      {
+        "title": "An introduction to Reinforcement Learning",
+        "channel": "Arxiv Insights",
+        "url": "https://www.youtube.com/watch?v=JgvyzIkgxF0",
+        "why": "一集讲清 RL 基本概念框架：智能体、环境、奖励与策略"
+      },
+      {
+        "title": "AlphaGo - The Movie | Full award-winning documentary",
+        "channel": "Google DeepMind",
+        "url": "https://www.youtube.com/watch?v=WXuK6gekU1Y",
+        "why": "DeepMind 官方纪录片，直观感受强化学习+蒙特卡洛树搜索的历史性时刻"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "零基础学习强化学习算法：ppo",
+        "up": "RethinkFun",
+        "url": "https://www.bilibili.com/video/BV1iz421h7gb",
+        "why": "RethinkFun 从零推导 PPO，29万+播放，兼顾公式与直觉"
+      },
+      {
+        "title": "【强化学习 原理+代码】彻底搞懂：Q-learning Sarsa, DQN, 蒙特卡洛树原理与代码分析",
+        "up": "卢菁博士",
+        "url": "https://www.bilibili.com/video/BV1dEXvYwEvu",
+        "why": "100万+播放，Q-learning/DQN 原理配代码逐行讲解"
+      }
+    ],
+    "keywords": ["强化学习入门", "PPO算法讲解", "AlphaGo原理"],
+    "note": ""
+  },
+  {
+    "id": "phase10-llm-scratch",
+    "youtube": [
+      {
+        "title": "Let's build GPT: from scratch, in code, spelled out.",
+        "channel": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+        "why": "Karpathy 带你从零写 nanoGPT，从零构建 LLM 的标杆课程"
+      },
+      {
+        "title": "Let's build the GPT Tokenizer",
+        "channel": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=zduSFxRajkE",
+        "why": "手写 BPE 分词器，补上 LLM  pipeline 中最容易被忽略的一环"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "GPT，GPT-2，GPT-3 论文精读【论文精读】",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1AF411b7xQ",
+        "why": "李沐一口气读完三代 GPT 论文，理解 GPT 架构演进脉络"
+      },
+      {
+        "title": "LLMs-Zero-to-Hero，完全从零手写大模型，从数据处理到模型训练",
+        "up": "袁朝发",
+        "url": "https://www.bilibili.com/video/BV1qWwke5E3K",
+        "why": "中文 nanoGPT 复现教程，一小时跟练从数据处理到训练全流程"
+      }
+    ],
+    "keywords": ["从零手搓GPT", "nanoGPT复现", "大模型训练原理"],
+    "note": ""
+  },
+  {
+    "id": "phase11-llm-eng",
+    "youtube": [
+      {
+        "title": "[1hr Talk] Intro to Large Language Models",
+        "channel": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+        "why": "Karpathy 一小时纵览 LLM 训练、微调与安全全景，工程视角极佳"
+      },
+      {
+        "title": "What is Retrieval-Augmented Generation (RAG)?",
+        "channel": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=T-D1OfcDW1M",
+        "why": "IBM 出品的 RAG 概念精讲，快速建立检索增强生成的工程认知"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "吴恩达《检索增强生成 Retrieval Augmented Generation (RAG)》（DeepLearning.AI 中英字幕）",
+        "up": "半途不而废的程序猿",
+        "url": "https://www.bilibili.com/video/BV1eecUz7ExG",
+        "why": "DeepLearning.AI 官方 RAG 短课搬运，体系化讲检索与评估"
+      },
+      {
+        "title": "【中文完整版全9集】ChatGPT提示词工程师教程 吴恩达xOpenAI官方",
+        "up": "十元钱钱",
+        "url": "https://www.bilibili.com/video/BV1AT41187qt",
+        "why": "吴恩达与 OpenAI 合作的 Prompt Engineering 官方课程中字版"
+      }
+    ],
+    "keywords": ["RAG知识库搭建", "大模型微调LoRA", "prompt提示词工程"],
+    "note": ""
+  },
+  {
+    "id": "phase12-multimodal",
+    "youtube": [
+      {
+        "title": "OpenAI CLIP: Connecting Text and Images (Paper Explained)",
+        "channel": "Yannic Kilcher",
+        "url": "https://www.youtube.com/watch?v=T9XSU0pKX2E",
+        "why": "Yannic 精读 CLIP 论文，讲透图文对比学习的对齐机制"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "CLIP 论文逐段精读【论文精读】",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1SL4y1s7LQ",
+        "why": "李沐逐段精读 CLIP，多模态入门的标准读物"
+      },
+      {
+        "title": "多模态模型CLIP深度讲解",
+        "up": "RethinkFun",
+        "url": "https://www.bilibili.com/video/BV1pYmDYgEDW",
+        "why": "RethinkFun 系统拆解 CLIP 训练目标与代码实现"
+      }
+    ],
+    "keywords": ["CLIP模型原理", "多模态大模型入门", "图文对齐对比学习"],
+    "note": "YouTube 侧只保留 1 条经核实高度相关的权威讲解"
+  },
+  {
+    "id": "phase13-tools",
+    "youtube": [
+      {
+        "title": "The Model Context Protocol (MCP)",
+        "channel": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=CQywdSdi5iA",
+        "why": "Anthropic 官方介绍 MCP 协议设计动机与架构"
+      },
+      {
+        "title": "Building Agents with Model Context Protocol - Full Workshop with Mahesh Murag of Anthropic",
+        "channel": "AI Engineer",
+        "url": "https://www.youtube.com/watch?v=kQmXtrmQ5Zg",
+        "why": "Anthropic 工程师亲授的 MCP 实战工作坊，含完整代码演示"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "Model Context Protocol 深度解析与实战｜01｜精简版",
+        "up": "Koala聊开源",
+        "url": "https://www.bilibili.com/video/BV1wXrcYQEvE",
+        "why": "中文圈口碑较好的 MCP 深度解析，协议细节+实战兼顾"
+      },
+      {
+        "title": "大模型的 Function Calling（函数调用）到底是怎么实现的？底层原理是什么？",
+        "up": "AI大模型-阿水",
+        "url": "https://www.bilibili.com/video/BV1oYcDzdE5f",
+        "why": "专讲 Function Calling 底层实现原理，补齐工具调用的机制认知"
+      }
+    ],
+    "keywords": ["MCP协议教程", "function calling原理", "AI Agent开发实战"],
+    "note": ""
+  }
+]

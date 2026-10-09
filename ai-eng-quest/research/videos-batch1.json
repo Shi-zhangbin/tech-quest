@@ -1,0 +1,233 @@
+[
+  {
+    "id": "phase00-setup",
+    "youtube": [
+      {
+        "title": "Learn Docker – Full DevOps Course for Deploying Containerized Apps",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=rjjES5IsPdg",
+        "why": "freeCodeCamp 官方 Docker 全流程课程，覆盖容器化部署实战"
+      },
+      {
+        "title": "Git & GitHub Crash Course for Beginners [2026]",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=mAFoROnOfHs",
+        "why": "Git/GitHub 零基础速成，覆盖工程必备版本控制操作"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "Docker实战教程，跟架构师学docker，docker入门到大神",
+        "up": "尚硅谷",
+        "url": "https://www.bilibili.com/video/BV1gr4y1U7CY",
+        "why": "尚硅谷官方出品，372万播放，Docker 入门到实战"
+      },
+      {
+        "title": "Git全套教程，git技术大全（GitHub、Gitee码云、GitLab）",
+        "up": "尚硅谷",
+        "url": "https://www.bilibili.com/video/BV1vy4y1s7k6",
+        "why": "尚硅谷官方 Git 全套，覆盖 GitHub/Gitee/GitLab，137万播放"
+      }
+    ],
+    "keywords": ["uv python 包管理教程", "docker 入门到实战", "git 零基础教学"],
+    "note": ""
+  },
+  {
+    "id": "phase01-math",
+    "youtube": [
+      {
+        "title": "Vectors | Chapter 1, Essence of linear algebra",
+        "channel": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=fNk_zzaMoSs",
+        "why": "线性代数本质系列第1章，可视化理解向量，AI 数学入门最佳"
+      },
+      {
+        "title": "The essence of calculus",
+        "channel": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=WUvTyaaNkzM",
+        "why": "微积分本质系列开篇，直观理解导数与积分"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "【熟肉】线性代数的本质 - 01 - 向量究竟是什么？",
+        "up": "3Blue1Brown",
+        "url": "https://www.bilibili.com/video/BV1Ys411k7yQ",
+        "why": "3Blue1Brown 官方双语账号，192万播放，线代本质系列第1集"
+      },
+      {
+        "title": "【官方双语/合集】微积分的本质 - 系列合集",
+        "up": "3Blue1Brown",
+        "url": "https://www.bilibili.com/video/BV1qW411N7FU",
+        "why": "3Blue1Brown 官方双语合集，355万播放，微积分本质全系列"
+      }
+    ],
+    "keywords": ["线性代数的本质", "机器学习数学基础", "微积分可视化入门"],
+    "note": ""
+  },
+  {
+    "id": "phase02-ml",
+    "youtube": [
+      {
+        "title": "Machine Learning for Everybody – Full Course",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=i_LwzRVP7bg",
+        "why": "经典 ML 全覆盖（回归/树/聚类/评估），Kylie Ying 主讲"
+      },
+      {
+        "title": "Principal Component Analysis (PCA) clearly explained",
+        "channel": "StatQuest with Josh Starmer",
+        "url": "https://www.youtube.com/watch?v=_UVHneBUBW0",
+        "why": "StatQuest 招牌风格，PCA 降维讲得最清楚的单集"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "【机器学习】【白板推导系列】【合集 1～33】",
+        "up": "shuhuai008",
+        "url": "https://www.bilibili.com/video/BV1aE411o7qd",
+        "why": "白板推导原创 UP 主，192万播放，SVM/EM/概率图手工推导"
+      },
+      {
+        "title": "2022最新版-李宏毅机器学习深度学习课程",
+        "up": "DASOU讲AI",
+        "url": "https://www.bilibili.com/video/BV1m3411p7wD",
+        "why": "李宏毅 2022 课程完整搬运，32万播放，ML 到 DL 一体"
+      }
+    ],
+    "keywords": ["机器学习入门", "白板推导 机器学习", "李宏毅机器学习"],
+    "note": "B站第2条为李宏毅课程搬运（非官方账号），符合搬运类权威来源要求"
+  },
+  {
+    "id": "phase03-dl",
+    "youtube": [
+      {
+        "title": "The spelled-out intro to neural networks and backpropagation: building micrograd",
+        "channel": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=VMj-3S1tku0",
+        "why": "Karpathy Zero to Hero 第1讲，手写自动微分理解反向传播"
+      },
+      {
+        "title": "Applied Deep Learning with PyTorch - Full Course",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=CNuI8OWsppg",
+        "why": "PyTorch 官方合作完整课程，从张量到训练循环实战"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "10 多层感知机 + 代码实现 - 动手学深度学习v2",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1hh411U7gn",
+        "why": "李沐官方账号课程正片，MLP 原理+PyTorch 实现，66万播放"
+      },
+      {
+        "title": "【官方双语】深度学习之神经网络的结构 Part 1 ver 2.0",
+        "up": "3Blue1Brown",
+        "url": "https://www.bilibili.com/video/BV1bx411M7Zx",
+        "why": "3Blue1Brown 官方账号，96万播放，感知机与网络结构可视化"
+      }
+    ],
+    "keywords": ["反向传播原理", "pytorch 入门教程", "李沐 动手学深度学习"],
+    "note": ""
+  },
+  {
+    "id": "phase04-cv",
+    "youtube": [
+      {
+        "title": "Hot Dog or Not Hot Dog – Convolutional Neural Network Course for Beginners",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=nVhau51w6dM",
+        "why": "CNN 零基础完整课程，含卷积/池化/迁移学习实战"
+      },
+      {
+        "title": "OpenCV Tutorial - Develop Computer Vision Apps in the Cloud With Python",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=iXNsAYOTzgM",
+        "why": "OpenCV 工程实战课，补足 CV 工具链与部署"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "24 深度卷积神经网络 AlexNet【动手学深度学习v2】",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1h54y1L7oe",
+        "why": "李沐官方课程 AlexNet 讲次，CNN 经典网络脉络入门，33万播放"
+      },
+      {
+        "title": "3.1 YOLO系列理论合集(YOLOv1~v3)",
+        "up": "霹雳吧啦Wz",
+        "url": "https://www.bilibili.com/video/BV1yi4y1g7ro",
+        "why": "CV 区口碑 UP 主，43万播放，YOLO v1-v3 理论逐代精讲"
+      }
+    ],
+    "keywords": ["卷积神经网络入门", "yolo 目标检测实战", "resnet 残差网络讲解"],
+    "note": ""
+  },
+  {
+    "id": "phase05-nlp",
+    "youtube": [
+      {
+        "title": "Let's build GPT: from scratch, in code, spelled out.",
+        "channel": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+        "why": "Karpathy 手写 GPT，Attention/预训练机制逐行实现"
+      },
+      {
+        "title": "Natural Language Processing with spaCy & Python - Course for Beginners",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=dIUTsFT2MeQ",
+        "why": "NLP 工程入门完整课，词向量到 pipeline 实践"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "Transformer论文逐段精读【论文精读】",
+        "up": "跟李沐学AI",
+        "url": "https://www.bilibili.com/video/BV1pu411o7BE",
+        "why": "李沐官方账号，182万播放，Attention Is All You Need 逐段精讲"
+      },
+      {
+        "title": "李宏毅 | 自注意力机制和Transformer详细解析",
+        "up": "李宏毅深度学习课堂",
+        "url": "https://www.bilibili.com/video/BV1r8nMz4EAj",
+        "why": "李宏毅课程搬运，9.2万播放，Self-Attention 新手友好讲解"
+      }
+    ],
+    "keywords": ["transformer 原理讲解", "注意力机制 李宏毅", "rag 检索增强实战"],
+    "note": "B站第2条为李宏毅课程搬运（非官方账号）"
+  },
+  {
+    "id": "phase06-speech",
+    "youtube": [
+      {
+        "title": "Open AI's Whisper is Amazing!",
+        "channel": "sentdex",
+        "url": "https://www.youtube.com/watch?v=OCBZtgQGt1I",
+        "why": "sentdex 第一时间上手 Whisper，语音识别效果与用法直观展示"
+      },
+      {
+        "title": "How to do Free Speech-to-Text Transcription Better Than Google Premium API with OpenAI Whisper Model",
+        "channel": "SECourses",
+        "url": "https://www.youtube.com/watch?v=msj3wuYf3d8",
+        "why": "SECourses 出品的 Whisper 免费转录完整教程，附本地部署细节"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "【干货】超详细OpenAI Whisper 本地部署安装与使用超强教程",
+        "up": "Ma5老师",
+        "url": "https://www.bilibili.com/video/BV1Vte8zLEmw",
+        "why": "3.8万播放的 Whisper 本地部署+转录字幕全流程教程"
+      },
+      {
+        "title": "音频视频语音识别转文本字幕工具 faster-whisper 1.2 整合包",
+        "up": "AI画师大阳",
+        "url": "https://www.bilibili.com/video/BV1DPayzgEAX",
+        "why": "faster-whisper 加速版实战，批量转录字幕，支持 Mac"
+      }
+    ],
+    "keywords": ["whisper 语音识别教程", "语音转文字 本地部署", "tts 语音合成 ai"],
+    "note": "语音方向优质系统课程稀缺，条目以 Whisper 实战教程为主；YouTube 两条均偏工具实操而非理论课"
+  }
+]

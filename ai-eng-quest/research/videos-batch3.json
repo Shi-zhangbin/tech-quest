@@ -1,0 +1,200 @@
+[
+  {
+    "id": "phase14-agent",
+    "youtube": [
+      {
+        "title": "Building more effective AI agents",
+        "channel": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=uhJJgc-0iTQ",
+        "why": "Anthropic 官方出品，讲清楚何时该用 Agent、如何设计工作流与工具调用，权威入门"
+      },
+      {
+        "title": "How We Build Effective Agents: Barry Zhang, Anthropic",
+        "channel": "AI Engineer",
+        "url": "https://www.youtube.com/watch?v=D7_ipDqhtwk",
+        "why": "Anthropic 工程师在 AI Engineer 峰会的演讲，系统讲 Agent 的规划/记忆/长程任务设计模式"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "ReAct Agent是什么？我用21分钟给你讲清楚！",
+        "up": "AI大模型元元",
+        "url": "https://www.bilibili.com/video/BV1iuAUzHErP",
+        "why": "21 分钟讲透 ReAct 推理-行动循环，B站同主题播放量最高的通俗讲解"
+      },
+      {
+        "title": "【Agent入门】3.工具调用实现原理",
+        "up": "花里胡哨的汤无际",
+        "url": "https://www.bilibili.com/video/BV1ymrCBeESA",
+        "why": "从实现层面拆解工具调用（Function Calling）机制，配合代码讲解，Agent 入门系列第 3 讲"
+      }
+    ],
+    "keywords": ["AI Agent 原理", "ReAct 智能体", "大模型工具调用"],
+    "note": ""
+  },
+  {
+    "id": "phase15-autonomous",
+    "youtube": [
+      {
+        "title": "AutoGPT & BabyAGI: autonomous AI Agents for LLMs explained",
+        "channel": "Discover AI",
+        "url": "https://www.youtube.com/watch?v=5cnk5zpf1EA",
+        "why": "深入讲解 AutoGPT/BabyAGI 类自主 Agent 架构：任务分解、自我提示、记忆循环"
+      },
+      {
+        "title": "The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic... - Yutaro Yamada",
+        "channel": "PyTorch",
+        "url": "https://www.youtube.com/watch?v=1DcZGAAF1CA",
+        "why": "Sakana AI 在 PyTorch 官方频道讲 AI Scientist-v2，自动科研/自我改进的前沿实例"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "AutoGPT傻瓜式使用教程+真实体验！",
+        "up": "程序员鱼皮",
+        "url": "https://www.bilibili.com/video/BV1ho4y1b75o",
+        "why": "知名技术 UP 主实测 AutoGPT 自主任务执行全流程，15 万播放，直观感受自主 Agent 的能力与局限"
+      },
+      {
+        "title": "本地部署全自动写论文的AI智能体！全球首个AI科学家-AI Scientist诞生",
+        "up": "AI超元域",
+        "url": "https://www.bilibili.com/video/BV1FZ421K7so",
+        "why": "手把手本地部署 AI Scientist，展示自动从选题到成文的自动研究管线"
+      }
+    ],
+    "keywords": ["AutoGPT 自主智能体", "AI 自动科研", "自我改进 AI"],
+    "note": ""
+  },
+  {
+    "id": "phase16-multiagent",
+    "youtube": [
+      {
+        "title": "Multi Agent Systems Explained: How AI Agents & LLMs Work Together",
+        "channel": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=sWH0T4Zez6I",
+        "why": "IBM 官方科普，讲多 Agent 系统的角色分工、通信与协作模式，概念框架清晰"
+      },
+      {
+        "title": "Agentic AI Frameworks Explained: Workflows, Multi-Agent, & Production",
+        "channel": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=ZVPlLaehjLk",
+        "why": "IBM 横评主流多智能体框架与生产化考量，衔接工程落地"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "挑战12分钟搞定，多智能体（Multi-Agent）架构",
+        "up": "AI大模型学习study",
+        "url": "https://www.bilibili.com/video/BV11p6wB2EmX",
+        "why": "12 分钟速览多智能体架构核心：协作模式、消息传递与编排，2.5 万播放"
+      },
+      {
+        "title": "AutoGen Studio零代码创建AI智能体工作流！支持工具调用与多agents协作",
+        "up": "AI超元域",
+        "url": "https://www.bilibili.com/video/BV1i9QfYaEf9",
+        "why": "用微软 AutoGen Studio 实操多 Agent 协作搭建，从概念到动手的最短路径"
+      }
+    ],
+    "keywords": ["多智能体协作", "AutoGen 教程", "Agent 群体智能"],
+    "note": ""
+  },
+  {
+    "id": "phase17-infra",
+    "youtube": [
+      {
+        "title": "MLOps Course – Build Machine Learning Production Grade Projects",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=-dJPoLm_gtE",
+        "why": "freeCodeCamp 完整 MLOps 课程，覆盖 CI/CD、部署与监控的生产级项目实战"
+      },
+      {
+        "title": "vLLM on Kubernetes in Production",
+        "channel": "Kubesimplify",
+        "url": "https://www.youtube.com/watch?v=t0iJGEG0IXk",
+        "why": "专注讲生产环境下在 K8s 上跑 vLLM 推理服务，直接命中 LLM 推理部署痛点"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "怎么加快大模型推理？10分钟学懂VLLM内部原理，KV Cache，PageAttention",
+        "up": "RethinkFun",
+        "url": "https://www.bilibili.com/video/BV1kx4y1x7bu",
+        "why": "RethinkFun 硬核讲 vLLM 推理加速原理（KV Cache/PagedAttention），14 万播放，推理服务的理论地基"
+      },
+      {
+        "title": "MLOps第一次亲密接触-基于Kubeflow的机器学习工程链入门",
+        "up": "中国DevOps社区",
+        "url": "https://www.bilibili.com/video/BV14d4y1b7X3",
+        "why": "中国 DevOps 社区 65 分钟分享，基于 Kubeflow 讲 K8s 上的 ML 工程链路，中文稀缺资源"
+      }
+    ],
+    "keywords": ["大模型推理部署", "vLLM 实战", "MLOps 入门"],
+    "note": ""
+  },
+  {
+    "id": "phase18-ethics",
+    "youtube": [
+      {
+        "title": "What is interpretability?",
+        "channel": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=TxhhMTOTMDg",
+        "why": "Anthropic 官方讲可解释性——理解模型内部机制是对齐与安全的技术基础"
+      },
+      {
+        "title": "The OTHER AI Alignment Problem: Mesa-Optimizers and Inner Alignment",
+        "channel": "Robert Miles AI Safety",
+        "url": "https://www.youtube.com/watch?v=bJLcIBixGj8",
+        "why": "AI 安全领域最知名科普频道，深入讲解内部对齐（mesa-optimizer）这一核心难题"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "AI的安全对齐，可能是个幻觉",
+        "up": "隔壁的程序员老王",
+        "url": "https://www.bilibili.com/video/BV1AEd6BZEiB",
+        "why": "从工程视角质疑与剖析对齐现状，触及 RLHF 局限与红队思维，2 万播放"
+      },
+      {
+        "title": "AI价值对齐：回形针最大化器",
+        "up": "修饼xiubing",
+        "url": "https://www.bilibili.com/video/BV1ytMX6VEuC",
+        "why": "用经典思想实验讲价值对齐问题的本质，快速建立对齐问题直觉"
+      }
+    ],
+    "keywords": ["AI 对齐问题", "大模型安全红队", "AI 伦理风险"],
+    "note": ""
+  },
+  {
+    "id": "phase19-capstone",
+    "youtube": [
+      {
+        "title": "Build Your Own Coding Agent (From Scratch)",
+        "channel": "Owain Lewis",
+        "url": "https://www.youtube.com/watch?v=kU8Tg1_PYJE",
+        "why": "从零手写一个 coding agent，端到端覆盖工具循环/文件操作/执行反馈，capstone 标杆"
+      },
+      {
+        "title": "Learn RAG From Scratch – Python AI Tutorial from a LangChain Engineer",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=sVcwVQRHIc8",
+        "why": "LangChain 工程师主讲，freeCodeCamp 出品的 RAG 系统从零实战课"
+      }
+    ],
+    "bilibili": [
+      {
+        "title": "从零手搓——Mini Claude Code",
+        "up": "果粒奶优有果粒",
+        "url": "https://www.bilibili.com/video/BV1QFovBbEd6",
+        "why": "从零实现一个迷你 Claude Code，完整走通 coding agent 的核心闭环，最贴合 capstone 主题"
+      },
+      {
+        "title": "【项目实战】RAG会话_知识库问答系统_手搓RAG项目",
+        "up": "尚学堂官方",
+        "url": "https://www.bilibili.com/video/BV1ZobP6DE4L",
+        "why": "150 分钟手搓 RAG 知识库问答系统，覆盖检索/生成/会话管理全链路"
+      }
+    ],
+    "keywords": ["手搓 coding agent", "RAG 项目实战", "AI 综合项目教程"],
+    "note": ""
+  }
+]
