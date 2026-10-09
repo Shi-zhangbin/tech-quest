@@ -1,4 +1,4 @@
-// AI-ENG-QUEST 知识库 · 基于 rohitg00/ai-engineering-from-scratch 20 phases · 2026-10-03
+// AI-ENG-QUEST 知识库 · 基于 fancyboi999/ai-engineering-from-scratch-zh（中文全量翻译） 20 phases · 2026-10-03
 window.LLM_QUEST_CONTENT = {
   nodes: [
     {
@@ -9,7 +9,7 @@ window.LLM_QUEST_CONTENT = {
       deps: [],
       grid: { col: 1, row: 0 },
       summary: "整条路径的起点：Python/Git/Docker/GPU 环境一次搭对",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/00-setup-and-tooling",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/00-setup-and-tooling",
       sections: {
         principle: "这是整张地图的第 0 关：不碰任何模型，先把开发环境、版本控制、容器化、GPU 与云端算力、API key 管理这套「工程地基」打牢。\n后面 19 个 phase 的每一课都假设你能熟练用 Git 切分支、用 Docker 复现环境、用 uv/venv 隔离依赖、在 Jupyter 里跑实验。\n这一关偷工减料，后面每次环境报错都会回来讨债。",
         formula: [
@@ -77,7 +77,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase00-setup"],
       grid: { col: 2, row: 0 },
       summary: "线代/微积分/概率/信息论，建立「能算梯度」的直觉",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/01-math-foundations",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/01-math-foundations",
       sections: {
         principle: "这是所有下游 phase 的公共底座：线性代数解释数据与参数的形状，微积分与链式法则解释梯度怎么流，概率与信息论解释损失函数为什么这么设计。\n课程编排的目标不是学数学，而是「够用」——22 课从向量直觉一路铺到 SVD、傅里叶、图论，核心是把反向传播（phase03）和注意力（phase07）里出现的每个符号都认熟。\n学完你应该能手推一个小网络的梯度，而不是能证明定理。",
         formula: [
@@ -146,7 +146,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase01-math"],
       grid: { col: 3, row: 0 },
       summary: "回归/树/SVM/集成，建立「偏差-方差」的工程直觉",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/02-ml-fundamentals",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/02-ml-fundamentals",
       sections: {
         principle: "这一站把数学变成「能跑的模型」：从线性回归到树模型、SVM、集成方法，覆盖监督/无监督全家桶。\n它真正的价值不在算法本身（很多已被深度学习取代），而在训练出一套工程直觉——偏差-方差权衡、交叉验证、特征工程、不平衡数据处理，这些判断力在 phase11 调 LLM 系统时依然每天在用。\n18 课走完，你应该能给一个陌生表格数据集快速建立 baseline。",
         formula: [
@@ -215,7 +215,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase02-ml"],
       grid: { col: 4, row: 0 },
       summary: "反向传播到 mini 框架，神经网络的完整内功",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/03-deep-learning-core",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/03-deep-learning-core",
       sections: {
         principle: "前置线最后一关：从感知机到手写反向传播，再到用 PyTorch 搭出自己的 mini 框架。\n这一 phase 把 phase01 的链式法则变成真实代码——你会亲手实现前向、反向、优化器、正则化的完整训练循环，之后所有架构（CNN/Transformer/扩散模型）都只是这套骨架上的变体。\n它是模态线（CV/NLP/语音）、RL、Transformer 三个方向的共同闸门。",
         formula: [
@@ -284,7 +284,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase03-dl"],
       grid: { col: 1, row: 1 },
       summary: "卷积到扩散，28 课走完视觉全谱系",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/04-computer-vision",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/04-computer-vision",
       sections: {
         principle: "模态线第一站，也是课程量最大的 phase 之一（28 课）：从手写卷积出发，走完 LeNet→ResNet 的经典脉络，再进入检测（YOLO）、分割（U-Net/Mask R-CNN）、生成（GAN/扩散）三大任务族。\n后半段直接对接前沿：ViT、CLIP 开放词表、NeRF/3D Gaussian Splatting、SAM、VLM——这些内容正是 phase08 生成式 AI 和 phase12 多模态的入场券。\n学完你能独立搭一条从数据到部署的视觉流水线（16 课 capstone）。",
         formula: [
@@ -353,7 +353,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase03-dl"],
       grid: { col: 2, row: 1 },
       summary: "从词袋到注意力，通向 Transformer 的引桥",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/05-nlp-foundations-to-advanced",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/05-nlp-foundations-to-advanced",
       sections: {
         principle: "模态线枢纽：从词袋/TF-IDF、word2vec 词向量起步，经 RNN、seq2seq 走到注意力机制——这条路刻意复刻了 NLP 的历史演进，让你理解 Transformer（phase07）到底解决了什么。\n后半段已是现代内容：subword 分词、embedding 模型深挖、RAG 分块策略、结构化输出、LLM 评估框架，直接服务 phase11 的 LLM 工程。\n它是 speech（phase06）与 transformers（phase07）两条线的共同上游。",
         formula: [
@@ -421,7 +421,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase05-nlp"],
       grid: { col: 3, row: 1 },
       summary: "频谱图/ASR/TTS，打通语音助手全链路",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/06-speech-and-audio",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/06-speech-and-audio",
       sections: {
         principle: "模态线收尾：把 NLP 的序列建模能力迁移到声音领域。\n核心转换只有一步——声音波形经 STFT 变成梅尔频谱图，之后 ASR（Whisper）、TTS、声音克隆本质上都是「图像/序列到序列」问题，前面学的 CNN 与 Transformer 直接复用。\n17 课以 Whisper 架构与微调为中轴，最终收束到实时语音助手管线（12 课）和流式 speech-to-speech（15 课）这些前沿工程形态。",
         formula: [
@@ -490,7 +490,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase05-nlp"],
       grid: { col: 5, row: 1 },
       summary: "自注意力手推到 scaling law，核心线的引擎室",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/07-transformers-deep-dive",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/07-transformers-deep-dive",
       sections: {
         principle: "核心线的发动机：16 课把 Transformer 从论文公式拆成可手写的组件——自注意力、多头、位置编码、完整架构，然后沿 BERT（掩码）/GPT（因果）/T5（编解码）三条演化线看架构如何分叉。\n工程纵深同样给足：MoE、KV Cache 与 FlashAttention、投机解码、Scaling Laws——这四块是理解一切现代 LLM 推理与训练成本的地基。\n14 课的 capstone 要求从零手搓一个完整 Transformer，这是通往 phase10「从零构建 LLM」的入场券。",
         formula: [
@@ -560,7 +560,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase07-transformers", "phase04-cv"],
       grid: { col: 6, row: 1 },
       summary: "VAE/GAN/扩散三代生成范式，AI 绘画的底层",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/08-generative-ai",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/08-generative-ai",
       sections: {
         principle: "生成模型的三代同堂：VAE（潜空间概率建模）、GAN（生成对抗博弈）、扩散（加噪-去噪迭代）——本 phase 把三代范式全部从零实现一遍，再落到 Stable Diffusion、ControlNet/LoRA 这些工业级形态。\n它吃 phase07 的架构功力（DiT、注意力条件注入）和 phase04 的视觉功底（U-Net、FID 评估），所以排在两者之后。\n学完你能解释每张 AI 生成图背后的完整数学链条，并亲手给扩散模型加条件控制。",
         formula: [
@@ -629,7 +629,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase03-dl"],
       grid: { col: 7, row: 1 },
       summary: "MDP 到 PPO，RLHF 的数学故乡",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/09-reinforcement-learning",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/09-reinforcement-learning",
       sections: {
         principle: "与模态线并行的第三支：从 MDP（状态/动作/奖励）这套决策语言出发，走完 Q-learning、DQN、策略梯度、Actor-Critic 到 PPO 的经典脉络。\n对 LLM 学习者而言，9 课（Reward Modeling & RLHF）才是战略要地——ChatGPT 式的对齐训练，本质就是把 PPO 用在语言模型上，这一课直接通向 phase10 的 RLHF/DPO 和 phase18 的对齐研究。\n12 课完整走完「从游戏 AI 到大模型对齐」的 RL 全景。",
         formula: [
@@ -698,7 +698,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase07-transformers"],
       grid: { col: 8, row: 1 },
       summary: "nanoGPT 式全流程：分词/预训练/SFT/DPO/量化",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/10-llms-from-scratch",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/10-llms-from-scratch",
       sections: {
         principle: "核心线的集大成：亲手造一个完整的 LLM  pipeline——手写 BPE 分词器、搭数据管线、预训练 mini GPT、指令微调（SFT）、RLHF/DPO 对齐、评估、量化与推理优化，一个环节都不外包。\n这是 nanoGPT 式「从零实现」的完整版：不只跑通架构，而是把工业界训练一个模型的全部工序（含分布式 scaling）都亲手过一遍。\n后半段直接拆解前沿：DeepSeek-V3、Jamba 混合架构、Native Sparse Attention、Multi-Token Prediction——让你读懂 2026 年最先进模型的架构选型。",
         formula: [
@@ -768,7 +768,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase10-llm-scratch"],
       grid: { col: 5, row: 2 },
       summary: "Prompt/RAG/微调/护栏，从模型到产品的工程线",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/11-llm-engineering",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/11-llm-engineering",
       sections: {
         principle: "工程线起点，也是从「懂模型」到「做产品」的换乘站：prompt 工程、few-shot/CoT、结构化输出、embedding、上下文工程、RAG 与进阶 RAG、LoRA 微调、function calling、评估、缓存与成本、护栏，最后在 13 课合成一个生产级应用。\n它只要求 phase10 的理解深度——知道模型怎么训的，才知道 prompt、RAG、微调三条增强路线各自的边界在哪里。\n这一 phase 是工程线（12/13）、agent 线（14）和 infra（17）三条下游线的总源头。",
         formula: [
@@ -836,7 +836,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase11-llm-eng", "phase04-cv"],
       grid: { col: 6, row: 2 },
       summary: "CLIP 到 LLaVA，视觉与语言的桥接工程",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/12-multimodal-ai",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/12-multimodal-ai",
       sections: {
         principle: "工程线第二站：回答「怎么让 LLM 看见、听见」。\n主线是视觉-语言模型的架构演进：CLIP 对比学习对齐两个模态 → BLIP-2 用 Q-Former 做桥 → LLaVA 把视觉 token 直接喂给 LLM 做指令微调，再到 Qwen-VL、InternVL、Janus-Pro 等开源家族的具体实现。\n后半段扩展到视频（时序 grounding、百万 token 长视频）、音频-语言、omni 全模态与具身 VLA——25 课构成 2026 年多模态的完整地图。",
         formula: [
@@ -903,7 +903,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase11-llm-eng"],
       grid: { col: 7, row: 2 },
       summary: "Function Calling 到 MCP，模型的「手脚接口」",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/13-tools-and-protocols",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/13-tools-and-protocols",
       sections: {
         principle: "工程线收尾：把 LLM 从「只会说」变成「会调用」。\n上半段讲透 function calling——tool schema 设计、并行与流式调用、结构化输出；下半段是当前生态的事实标准：MCP（Model Context Protocol）从原理到手写 server/client、transport、安全（tool poisoning、OAuth 2.1）、网关与注册中心，外加 A2A 协议与 OpenTelemetry GenAI 观测。\n31 课的密度说明一件事：工具协议层已经是独立工程学科，它是 agent 线（phase14-16）的地面基础设施。",
         formula: [
@@ -971,7 +971,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase13-tools"],
       grid: { col: 5, row: 3 },
       summary: "ReAct 循环到记忆与规划，54 课的最大 phase",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/14-agent-engineering",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/14-agent-engineering",
       sections: {
         principle: "全仓库最大的 phase（54 课），也是当前工业界最热的战场：从 agent loop（感知-推理-行动）出发，系统覆盖 ReAct、ReWOO、Reflexion、Tree-of-Thoughts 四大推理范式，记忆（MemGPT/Mem0）、技能库（Voyager）、规划（HTN），再到 LangGraph/AutoGen/CrewAI/各家 SDK 的框架横评。\n后半段是稀缺的生产内容：SWE-bench/GAIA 基准、computer use、观测平台、失败模式、prompt injection 防御，以及一整组「agent workbench」课程讲怎么把 agent 开发工程化。\n它把 phase13 的工具协议变成真正能自主完成任务的系统。",
         formula: [
@@ -1041,7 +1041,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase14-agent"],
       grid: { col: 6, row: 3 },
       summary: "长程 agent、自我改进与安全缰绳",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/15-autonomous-systems",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/15-autonomous-systems",
       sections: {
         principle: "agent 线第二站：从「完成一个任务」跨到「长时间自主工作」。\n前沿样本拉满：AlphaEvolve 进化式编码、Darwin-Gödel Machine 自我改写、AI Scientist v2 自动科研、递归自我改进——这些代表 2026 年自主系统的能力边界。\n但本 phase 真正的工程含量在「缰绳」：durable execution、成本控制器、kill switch、checkpoint 回滚、propose-then-commit——让自主系统可控、可中断、可恢复，才是能上生产的自主。",
         formula: [
@@ -1109,7 +1109,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase15-autonomous"],
       grid: { col: 7, row: 3 },
       summary: "分工/通信/共识，从单兵到智能体社会",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/16-multi-agent-and-swarms",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/16-multi-agent-and-swarms",
       sections: {
         principle: "agent 线第三站：单个 agent 能力到顶后，问题变成「怎么组织一群 agent」。\n课程覆盖组织模式全谱系：supervisor/编排者、层级架构、辩论（society of mind）、角色专精、并行 swarm、群聊发言选择、handoff 交接，通信层有 A2A 协议与共享黑板，共识层有投票/BFT/协商，外加生成式 agent 社会模拟与 MARL（MADDPG/QMIX/MAPPO）。\n23 课的失败模式（groupthink、级联错误）与 22 课的生产 scaling（队列/检查点）是从 demo 到系统的分水岭。",
         formula: [
@@ -1178,7 +1178,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase11-llm-eng"],
       grid: { col: 3, row: 3 },
       summary: "vLLM/K8s/观测/FinOps，把模型变成服务",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/17-infrastructure-and-production",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/17-infrastructure-and-production",
       sections: {
         principle: "与 agent 线并行的工程纵深：把 phase11 做出的应用变成扛得住真实流量的服务。\n技术栈直接对标 2026 年生产环境：vLLM（PagedAttention）、SGLang（RadixAttention）、TensorRT-LLM 三大推理引擎，GPU K8s 自动扩缩、生产量化、冷启动治理、多区域 KV 局部性、prefill/decode 分离部署，再到观测、语义缓存、模型路由、灰度发布、SRE/混沌工程与 FinOps 成本治理。\n这一 phase 的知识密度 = 一个 LLM 平台团队的日常。",
         formula: [
@@ -1246,7 +1246,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase16-multiagent"],
       grid: { col: 8, row: 3 },
       summary: "Reward hacking 到红队，能力越强越需要的刹车",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/18-ethics-safety-alignment",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/18-ethics-safety-alignment",
       sections: {
         principle: "agent 线收官：当系统能自主行动、互相协作之后，「它做的事是否真是我们要的」成为主问题。\n课程分三层：对齐技术（RLHF 信号、DPO 家族、Constitutional AI/RLAIF）、失败机理（reward hacking、谄媚、mesa-optimization、对齐伪装、in-context scheming）、攻防实战（自动化红队、多轮越狱、间接注入、garak/PyRIT 工具链），外加公平性、差分隐私、水印与各地监管框架。\n30 课的体量说明：安全不是附录，是与能力并行的第二主轴。",
         formula: [
@@ -1314,7 +1314,7 @@ window.LLM_QUEST_CONTENT = {
       deps: ["phase16-multiagent", "phase17-infra", "phase18-ethics"],
       grid: { col: 6, row: 4 },
       summary: "87 课毕业设计：coding agent/RAG/分布式/安全门",
-      repo: "https://github.com/rohitg00/ai-engineering-from-scratch/tree/main/phases/19-capstone-projects",
+      repo: "https://github.com/fancyboi999/ai-engineering-from-scratch-zh/tree/main/phases/19-capstone-projects",
       sections: {
         principle: "整张地图的毕业考：87 课不是新课，而是把前 19 个 phase 熔铸成完整系统的实战清单。\n项目分两类——应用级（终端 coding agent、代码库 RAG、实时语音助手、多智能体软件团队、issue-to-PR agent 等 17 个）与原理级复现（从 BPE 分词器到手写 GPT、分布式训练、评估 harness、安全门等 69 个组件课）。\n完成标准不是「跑通」，而是每个项目都能讲清架构取舍、通过验证门禁、可观测可回滚——按 phase15-18 立下的工程纪律交付。",
         formula: [

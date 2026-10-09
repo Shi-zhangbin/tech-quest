@@ -9,7 +9,7 @@
 | LLM 推理 | `llm-quest/inference/llm-quest-inference.html` | 26 节点：Tokenization → KV Cache → PagedAttention → 投机解码；沙盒：70B 上线 / 高并发服务 / 长上下文 RAG |
 | LLM 训练 | `llm-quest/training/llm-quest-training.html` | 27 节点：反向传播 → 混合精度 → ZeRO/3D 并行 → RLHF/DPO；沙盒：显存预算 / 并行规划 / Loss 诊断 |
 | Kubernetes | `k8s-quest/k8s-quest.html` | 22 节点：容器基础 → 控制平面 → 调度/QoS → 故障排查；沙盒：服务上线 / 容量调度 / 排障推演 |
-| AI 工程全栈 | `ai-eng-quest/ai-eng-quest.html` | 基于 [rohitg00/ai-engineering-from-scratch](https://github.com/rohitg00/ai-engineering-from-scratch)（20 phases · 523 课）的课程地图：数学基础 → Transformer → Agent 集群；沙盒：Autodiff / 微型训练 / 注意力温度 |
+| AI 工程全栈 | `ai-eng-quest/ai-eng-quest.html` | 基于 [fancyboi999/ai-engineering-from-scratch-zh](https://github.com/fancyboi999/ai-engineering-from-scratch-zh) 中文版（20 阶段 · 503 课）的课程地图：数学基础 → Transformer → Agent 集群；沙盒：Autodiff / 微型训练 / 注意力温度 |
 
 ## 使用
 
